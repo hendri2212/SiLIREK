@@ -1,0 +1,14 @@
+body {
+    /* background-image: linear-gradient(180deg, var(--bs-secondary-bg), var(--bs-body-bg) 100px, var(--bs-body-bg)); */
+    background-image: linear-gradient(180deg, var(--bs-success-bg, #d1e7dd), var(--bs-body-bg) 100px, var(--bs-body-bg));
+    min-height: 100vh;
+}
+.container {
+    max-width: 960px;
+}
+.table-border-bottom-0 tbody tr:last-child td {
+    border-bottom: none;
+}
+tfoot.border-bottom-0 tr:last-child td {
+    border-bottom: none;
+}
