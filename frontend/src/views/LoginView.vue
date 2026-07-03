@@ -3,6 +3,11 @@
         <h1 class="display-4 fw-normal fw-bold text-info">SiLIREK</h1>
         <p class="fs-5 text-body-secondary">Sistem Pengendalian Realisasi Keuangan</p>
 
+        <div v-if="alertMessage" :class="['alert', `alert-${alertType}`, 'alert-dismissible', 'fade', 'show']" role="alert">
+            {{ alertMessage }}
+            <button type="button" class="btn-close" @click="alertMessage = ''" aria-label="Close"></button>
+        </div>
+
         <form @submit.prevent="handleLogin">
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="email" placeholder="Email" v-model="email" required>
@@ -25,6 +30,8 @@ import { useRouter } from 'vue-router';
 
 const email = ref('');
 const password = ref('');
+const alertMessage = ref('');
+const alertType = ref('success');
 const auth = useAuthStore();
 const router = useRouter();
 
@@ -38,11 +45,16 @@ const handleLogin = async () => {
         auth.login(token);
         await auth.fetchUser();
 
-        alert('Login berhasil!');
-        router.replace({ name: 'dashboard' })
+        alertMessage.value = 'Login berhasil!';
+        alertType.value = 'success';
+        
+        setTimeout(() => {
+            router.replace({ name: 'dashboard' });
+        }, 1500);
     } catch (error) {
         console.error('Login error:', error);
-        alert('Login gagal, periksa email atau password.');
+        alertMessage.value = 'Login gagal, periksa email atau password.';
+        alertType.value = 'danger';
     }
 };
 </script>

@@ -15,6 +15,8 @@
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Penggunaan</router-link>
             <router-link v-if="isAdminOrSuper" :to="{ name: 'reports.kegiatan' }"
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Laporan</router-link>
+            <router-link v-if="isSuperadmin" :to="{ name: 'organization.list' }"
+                class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Organisasi</router-link>
             <div v-if="$route.name != 'login'" class="dropdown">
                 <a class="btn p-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img v-if="auth.user?.photo" :src="`${baseApiUrl}/uploads/photos/${auth.user.photo}`" alt="Profile"
@@ -63,6 +65,10 @@ const isAdminOrSuper = computed(() =>
 
 const isUserOrSuper = computed(() =>
     role.value === 'user' || role.value === 'superadmin'
+)
+
+const isSuperadmin = computed(() =>
+    role.value === 'superadmin'
 )
 
 const logout = () => {

@@ -38,11 +38,8 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB) {
 	})
 
 	userHandler := handlers.UsersHandler(db)
-	positionsHandler := handlers.PositionsHandler(db)
-	leadersHandler := handlers.LeadersHandler(db)
 	activitiesHandler := handlers.ActivitiesHandler(db)
-	quaterliesHandler := handlers.QuarterliesHandler(db)
-	budgetsHandler := handlers.BudgetsHandler(db)
+	organizationsHandler := handlers.OrganizationsHandler(db)
 
 	api := router.Group("/api")
 	{
@@ -60,18 +57,14 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB) {
 		api.PUT("/users/:id", userHandler.UpdateUser)
 		api.DELETE("/users/:id", userHandler.DeleteUser)
 
-		api.GET("/positions", positionsHandler.GetPositions)
-		api.GET("/leaders", leadersHandler.GetLeaders)
-		api.GET("/quarterlies", quaterliesHandler.GetQuarterlies)
-
-		api.GET("/budgets", budgetsHandler.GetBudgets)
-		api.POST("/budgets", budgetsHandler.CreateBudget)
-		api.GET("/budgets/:id", budgetsHandler.GetBudgetByID)
-		api.PUT("/budgets/:id", budgetsHandler.UpdateBudget)
-		api.GET("/budgets/user/:user_id", budgetsHandler.GetBudgetsByUserID)
-		api.GET("/budgets/user/:user_id/quarterly/:quarterly_id", budgetsHandler.GetBudgetsByUserIDAndQuarterlyID)
 
 		api.GET("/activity", activitiesHandler.GetActivities)
 		api.POST("/activity", activitiesHandler.CreateActivity)
+
+		api.GET("/organization", organizationsHandler.GetOrganizations)
+		api.POST("/organization", organizationsHandler.CreateOrganization)
+		api.GET("/organization/:id", organizationsHandler.GetOrganizationByID)
+		api.PUT("/organization/:id", organizationsHandler.UpdateOrganization)
+		api.DELETE("/organization/:id", organizationsHandler.DeleteOrganization)
 	}
 }

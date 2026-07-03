@@ -107,6 +107,29 @@ const router = createRouter({
                 },
             ]
         },
+        {
+            path: '/organization',
+            name: 'organization',
+            component: () => import('../views/OrganizationView.vue'),
+            meta: { requiresAuth: true, requiresRole: ['superadmin'] },
+            children: [
+                {
+                    path: '',
+                    name: 'organization.list',
+                    component: () => import('../components/organization/Organization.vue'),
+                },
+                {
+                    path: 'create',
+                    name: 'organization.create',
+                    component: () => import('../components/organization/OrganizationCreate.vue'),
+                },
+                {
+                    path: 'edit/:id',
+                    name: 'organization.edit',
+                    component: () => import('../components/organization/OrganizationEdit.vue'),
+                }
+            ]
+        },
     ],
 });
 
