@@ -71,32 +71,6 @@ const router = createRouter({
             ]
         },
         {
-            path: '/budgeting',
-            name: 'budgeting',
-            component: () => import('../views/BudgetingView.vue'),
-            meta: { requiresAuth: true, requiresRole: ['admin', 'superadmin'] },
-            children: [
-                {
-                    path: '',
-                    name: 'budgeting.list',
-                    component: () => import('../components/budgeting/Budgeting.vue'),
-                    meta: { requiresAuth: true, requiresRole: ['admin', 'superadmin'] },
-                },
-                {
-                    path: 'using',
-                    name: 'budgeting.using',
-                    component: () => import('../components/budgeting/BudgetingUsing.vue'),
-                    meta: { requiresAuth: true, requiresRole: ['user', 'superadmin'] },
-                },
-                {
-                    path: 'edit/:id',
-                    name: 'budgeting.edit',
-                    component: () => import('../components/budgeting/BudgetingEdit.vue'),
-                    meta: { requiresAuth: true, requiresRole: ['user', 'superadmin'] },
-                },
-            ]
-        },
-        {
             path: '/reports',
             name: 'reports',
             component: () => import('../views/ReportsView.vue'),
