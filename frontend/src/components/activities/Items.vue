@@ -95,8 +95,9 @@
             <!-- Items List -->
             <div v-for="(item, index) in items" :key="item.id" class="card border-0 shadow-sm rounded-4 item-card mb-1">
                 <div class="card-body px-3 py-2">
-                    <div class="row align-items-center">
-                        <div class="col-md-5 mb-2 mb-md-0 d-flex align-items-center gap-2">
+                    <div class="row align-items-center w-100 m-0">
+                        <!-- Left: Index, Code, Date -->
+                        <div class="col-md-5 mb-2 mb-md-0 d-flex align-items-center gap-2 px-0">
                             <div class="index-indicator text-muted d-flex align-items-center justify-content-center rounded-circle bg-light fw-bold flex-shrink-0" style="width: 28px; height: 28px; font-size: 0.85rem;">
                                 {{ index + 1 }}
                             </div>
@@ -104,16 +105,22 @@
                                 <span class="badge bg-info-subtle text-info px-2 py-0 border border-info-subtle">
                                     <i class="bi bi-hash"></i>{{ item.code }}
                                 </span>
-                                <div class="text-dark small fw-medium" style="font-size: 0.8rem;"><i class="bi bi-calendar-date text-muted"></i> {{ formatDate(item.date) }}</div>
+                                <div class="text-dark small fw-medium text-nowrap" style="font-size: 0.8rem;"><i class="bi bi-calendar-date text-muted"></i> {{ formatDate(item.date) }}</div>
                             </div>
                         </div>
                         
-                        <div class="col-md-4 mb-2 mb-md-0 text-md-end">
+                        <!-- Right: Kredit -->
+                        <div class="col-md-4 mb-2 mb-md-0 text-md-end px-0 pe-md-3">
                             <div class="text-muted small d-md-none" style="font-size: 0.75rem;">Kredit:</div>
                             <h6 class="fw-bold text-danger mb-0 fs-6">{{ formatCurrency(item.credit) }}</h6>
                         </div>
                         
-                        <div v-if="isAdminOrSuper" class="col-md-3 text-md-end d-flex justify-content-md-end gap-1 mt-2 mt-md-0 border-top border-md-top-0 pt-2 pt-md-0">
+                        <!-- Far Right: Actions -->
+                        <div v-if="isAdminOrSuper" class="col-md-3 text-md-end d-flex justify-content-md-end align-items-center gap-2 mt-2 mt-md-0 px-0">
+                            <button class="btn btn-sm btn-white bg-light text-muted rounded-circle shadow-sm border p-0 d-flex align-items-center justify-content-center toggle-arrow hover-lift" style="width: 30px; height: 30px;" @click="toggleExpand(item.id)" title="Lihat Uraian">
+                                <i class="bi" :class="isExpanded(item.id) ? 'bi-chevron-up' : 'bi-chevron-down'" style="font-size: 0.9rem;"></i>
+                            </button>
+                            <div class="divider-vertical" style="height: 20px;"></div>
                             <router-link :to="{ name: 'items.edit', params: { activityId: route.params.activityId, subActivityId: route.params.subActivityId, accountId: route.params.accountId, itemId: item.id } }"
                                 class="btn btn-sm btn-light text-warning fw-bold rounded-circle action-btn" style="width: 30px; height: 30px;" title="Edit">
                                 <i class="bi bi-pencil-fill" style="font-size: 0.8rem;"></i>
@@ -122,7 +129,10 @@
                                 <i class="bi bi-trash-fill" style="font-size: 0.8rem;"></i>
                             </button>
                         </div>
-                        <div v-else class="col-md-3 text-md-end d-flex justify-content-md-end mt-2 mt-md-0 border-top border-md-top-0 pt-2 pt-md-0">
+                        <div v-else class="col-md-3 text-md-end d-flex justify-content-md-end align-items-center gap-2 mt-2 mt-md-0 px-0">
+                            <button class="btn btn-sm btn-white bg-light text-muted rounded-circle shadow-sm border p-0 d-flex align-items-center justify-content-center toggle-arrow hover-lift" style="width: 30px; height: 30px;" @click="toggleExpand(item.id)" title="Lihat Uraian">
+                                <i class="bi" :class="isExpanded(item.id) ? 'bi-chevron-up' : 'bi-chevron-down'" style="font-size: 0.9rem;"></i>
+                            </button>
                              <div class="d-inline-flex align-items-center justify-content-center text-success px-2 py-1 bg-success-subtle rounded-pill">
                                 <i class="bi bi-check-circle-fill me-1" style="font-size: 0.8rem;"></i>
                                 <span class="fw-bold" style="font-size: 0.75rem;">Aktif</span>
@@ -131,18 +141,10 @@
                     </div>
 
                     <!-- Collapsible Description -->
-                    <div class="collapse-description bg-light rounded-3 overflow-hidden" :class="{ 'show': isExpanded(item.id) }">
+                    <div class="collapse-description bg-light rounded-3 overflow-hidden mt-2" :class="{ 'show': isExpanded(item.id) }">
                         <div class="p-2 border-start border-3 border-info">
                             <p class="text-muted mb-0 small" style="white-space: pre-line;">{{ item.description }}</p>
                         </div>
-                    </div>
-
-                    <!-- Toggle Button Bottom Center -->
-                    <div class="d-flex justify-content-center mt-2 position-relative">
-                        <div class="position-absolute w-100" style="top: 50%; left: 0; border-top: 1px dashed rgba(0,0,0,0.05); z-index: 0;"></div>
-                        <button class="btn btn-sm btn-white bg-white text-muted rounded-circle shadow-sm border p-0 d-flex align-items-center justify-content-center toggle-arrow" style="width: 24px; height: 24px; z-index: 1;" @click="toggleExpand(item.id)" title="Lihat Uraian">
-                            <i class="bi" :class="isExpanded(item.id) ? 'bi-chevron-up' : 'bi-chevron-down'" style="font-size: 0.9rem;"></i>
-                        </button>
                     </div>
                 </div>
             </div>

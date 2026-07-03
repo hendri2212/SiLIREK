@@ -75,8 +75,17 @@ const item = reactive({
 
 const createItem = async () => {
     try {
-        // Convert date to RFC3339 for backend
-        const payload = { ...item, date: new Date(item.date).toISOString() }
+        // Append time to date string to ensure RFC3339 format without timezone shifts
+        let finalDate = item.date;
+        if (finalDate && !finalDate.includes('T')) {
+            finalDate = finalDate + 'T00:00:00Z';
+        }
+        const payload = { 
+            ...item, 
+            date: finalDate,
+            credit: parseFloat(item.credit) || 0,
+            expenditure_account_id: parseInt(route.params.accountId)
+        }
         await api.post('/item', payload)
         alert('Item Belanja berhasil ditambahkan')
         router.push({ name: 'items.list', params: { activityId: route.params.activityId, subActivityId: route.params.subActivityId, accountId: route.params.accountId } })

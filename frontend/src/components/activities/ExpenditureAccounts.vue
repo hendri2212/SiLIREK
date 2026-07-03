@@ -46,61 +46,67 @@
             </router-link>
         </div>
 
-        <div v-else class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-            <div class="col" v-for="(data, index) in accounts" :key="data.id">
-                <div class="card h-100 border-0 shadow-sm rounded-4 activity-card position-relative overflow-hidden" @click="goToItems(data.id)" style="cursor: pointer;">
-                    <div class="position-absolute top-0 end-0 p-3 text-info opacity-10" style="transform: translate(20%, -20%); pointer-events: none;">
-                        <i class="bi bi-cash-stack" style="font-size: 8rem;"></i>
-                    </div>
+        <div v-else class="d-flex flex-column gap-2">
+            <div v-for="(data, index) in accounts" :key="data.id" class="card border-0 shadow-sm rounded-4 activity-card position-relative overflow-hidden w-100" @click="goToItems(data.id)" style="cursor: pointer;">
+                <div class="position-absolute top-50 start-0 translate-middle-y ms-2 text-info opacity-10 d-none d-lg-block" style="pointer-events: none;">
+                    <i class="bi bi-cash-stack" style="font-size: 6rem;"></i>
+                </div>
+                
+                <div class="card-body p-3 px-4 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3 z-1 position-relative">
                     
-                    <div class="card-body p-4 d-flex flex-column z-1 position-relative">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <span class="badge bg-info-subtle text-info fs-6 px-3 py-2 rounded-pill border border-info-subtle shadow-sm">
+                    <!-- Left: Index, Code, Description -->
+                    <div class="d-flex align-items-center gap-3 col-lg-4">
+                        <div class="index-indicator text-muted d-flex align-items-center justify-content-center rounded-circle bg-light fw-bold flex-shrink-0" style="width: 35px; height: 35px;">
+                            {{ index + 1 }}
+                        </div>
+                        <div class="min-w-0">
+                            <span class="badge bg-info-subtle text-info px-2 py-1 rounded border border-info-subtle mb-1 d-inline-block">
                                 <i class="bi bi-hash me-1"></i> {{ data.code }}
                             </span>
-                            <div class="index-indicator text-muted d-flex align-items-center justify-content-center rounded-circle bg-light fw-bold" style="width: 35px; height: 35px;">
-                                {{ index + 1 }}
-                            </div>
-                        </div>
-                        
-                        <p class="card-title fw-bold text-dark mb-4 flex-grow-1" style="line-height: 1.5; font-size: 1.05rem;">
-                            {{ data.description }}
-                        </p>
-
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted small">Pagu Anggaran</span>
-                                <span class="fw-bold text-success">{{ formatCurrency(data.budget_ceiling) }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="text-muted small">Total Kredit</span>
-                                <span class="fw-bold text-danger">{{ formatCurrency(data.total_credit || 0) }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between border-top pt-2 mt-2">
-                                <span class="text-dark small fw-bold">Sisa Anggaran</span>
-                                <span class="fw-bold" :class="(data.remaining_budget >= 0 || data.remaining_budget == null) ? 'text-primary' : 'text-danger'">
-                                    {{ formatCurrency(data.remaining_budget !== undefined ? data.remaining_budget : data.budget_ceiling) }}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <div class="divider mb-3"></div>
-                        
-                        <div v-if="isAdminOrSuper" class="d-flex gap-2 justify-content-end mt-auto">
-                            <router-link :to="{ name: 'expenditureaccounts.edit', params: { activityId: route.params.activityId, subActivityId: route.params.subActivityId, accountId: data.id } }"
-                                @click.stop
-                                class="btn btn-light text-warning fw-bold rounded-pill px-3 py-2 shadow-sm btn-action w-50">
-                                <i class="bi bi-pencil-fill me-1"></i> Edit
-                            </router-link>
-                            <button class="btn btn-light text-danger fw-bold rounded-pill px-3 py-2 shadow-sm btn-action w-50" @click.stop="deleteAccount(data.id)">
-                                <i class="bi bi-trash-fill me-1"></i> Hapus
-                            </button>
-                        </div>
-                        <div v-else class="d-flex align-items-center justify-content-end text-success mt-auto p-2 bg-success-subtle rounded-pill">
-                            <i class="bi bi-check-circle-fill me-2 ms-2"></i>
-                            <span class="small fw-bold me-2">Anggaran Aktif</span>
+                            <h6 class="fw-bold text-dark mb-0 text-truncate" :title="data.description">
+                                {{ data.description }}
+                            </h6>
                         </div>
                     </div>
+
+                    <!-- Middle: Budget Info -->
+                    <div class="d-flex flex-column flex-md-row gap-3 gap-md-4 col-lg-5 justify-content-lg-center bg-light p-2 rounded-3">
+                        <div class="text-md-end flex-grow-1">
+                            <div class="text-muted small fw-medium">Pagu Anggaran</div>
+                            <div class="fw-bold text-success">{{ formatCurrency(data.budget_ceiling) }}</div>
+                        </div>
+                        <div class="divider-vertical d-none d-md-block"></div>
+                        <div class="text-md-end flex-grow-1">
+                            <div class="text-muted small fw-medium">Total Kredit</div>
+                            <div class="fw-bold text-danger">{{ formatCurrency(data.total_credit || 0) }}</div>
+                        </div>
+                        <div class="divider-vertical d-none d-md-block"></div>
+                        <div class="text-md-end flex-grow-1">
+                            <div class="text-dark small fw-bold">Sisa Anggaran</div>
+                            <div class="fw-bold" :class="(data.remaining_budget >= 0 || data.remaining_budget == null) ? 'text-primary' : 'text-danger'">
+                                {{ formatCurrency(data.remaining_budget !== undefined ? data.remaining_budget : data.budget_ceiling) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Actions -->
+                    <div class="col-lg-2 d-flex justify-content-lg-end align-items-center border-top border-lg-top-0 pt-3 pt-lg-0 mt-2 mt-lg-0">
+                        <div v-if="isAdminOrSuper" class="d-flex gap-2 w-100 justify-content-end">
+                            <router-link :to="{ name: 'expenditureaccounts.edit', params: { activityId: route.params.activityId, subActivityId: route.params.subActivityId, accountId: data.id } }"
+                                @click.stop
+                                class="btn btn-light text-warning fw-bold rounded-circle shadow-sm btn-action d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Edit">
+                                <i class="bi bi-pencil-fill"></i>
+                            </router-link>
+                            <button class="btn btn-light text-danger fw-bold rounded-circle shadow-sm btn-action d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" @click.stop="deleteAccount(data.id)" title="Hapus">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </div>
+                        <div v-else class="d-inline-flex align-items-center justify-content-center text-success p-2 bg-success-subtle rounded-pill w-100" style="height: 36px;">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <span class="small fw-bold">Aktif</span>
+                        </div>
+                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -184,10 +190,14 @@ onBeforeMount(async () => {
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08) !important;
 }
 
-.divider {
-    height: 1px;
-    background: linear-gradient(90deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.05) 100%);
-    width: 100%;
+.divider-vertical {
+    width: 1px;
+    background-color: rgba(0,0,0,0.05);
+    height: auto;
+}
+
+.min-w-0 {
+    min-width: 0;
 }
 
 .btn-action {

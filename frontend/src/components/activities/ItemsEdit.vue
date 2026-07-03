@@ -101,7 +101,16 @@ const fetchItem = async () => {
 
 const updateItem = async () => {
     try {
-        const payload = { ...item, date: new Date(item.date).toISOString() }
+        let finalDate = item.date;
+        if (finalDate && !finalDate.includes('T')) {
+            finalDate = finalDate + 'T00:00:00Z';
+        }
+        const payload = { 
+            ...item, 
+            date: finalDate,
+            credit: parseFloat(item.credit) || 0,
+            expenditure_account_id: parseInt(route.params.accountId)
+        }
         await api.put(`/item/${route.params.itemId}`, payload)
         alert('Item Belanja berhasil diupdate')
         router.push({ name: 'items.list', params: { activityId: route.params.activityId, subActivityId: route.params.subActivityId, accountId: route.params.accountId } })
