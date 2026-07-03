@@ -45,7 +45,7 @@
 
         <div v-else class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
             <div class="col" v-for="(data, index) in subActivities" :key="data.id">
-                <div class="card h-100 border-0 shadow-sm rounded-4 activity-card position-relative overflow-hidden">
+                <div class="card h-100 border-0 shadow-sm rounded-4 activity-card position-relative overflow-hidden" @click="goToExpenditureAccounts(data.id)" style="cursor: pointer;">
                     <div class="position-absolute top-0 end-0 p-3 text-info opacity-10" style="transform: translate(20%, -20%); pointer-events: none;">
                         <i class="bi bi-diagram-3-fill" style="font-size: 8rem;"></i>
                     </div>
@@ -68,10 +68,11 @@
                         
                         <div v-if="isAdminOrSuper" class="d-flex gap-2 justify-content-end mt-auto">
                             <router-link :to="{ name: 'subactivities.edit', params: { activityId: route.params.activityId, subActivityId: data.id } }"
+                                @click.stop
                                 class="btn btn-light text-warning fw-bold rounded-pill px-3 py-2 shadow-sm btn-action w-50">
                                 <i class="bi bi-pencil-fill me-1"></i> Edit
                             </router-link>
-                            <button class="btn btn-light text-danger fw-bold rounded-pill px-3 py-2 shadow-sm btn-action w-50" @click="deleteSubActivity(data.id)">
+                            <button class="btn btn-light text-danger fw-bold rounded-pill px-3 py-2 shadow-sm btn-action w-50" @click.stop="deleteSubActivity(data.id)">
                                 <i class="bi bi-trash-fill me-1"></i> Hapus
                             </button>
                         </div>
@@ -88,11 +89,12 @@
 
 <script setup>
 import { ref, onBeforeMount, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/plugins/axios'
 
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 const isAdminOrSuper = computed(() => authStore.user?.role === 'superadmin' || authStore.user?.role === 'admin')
 
@@ -131,6 +133,10 @@ const deleteSubActivity = async (id) => {
             alert('Gagal menghapus sub kegiatan.')
         }
     }
+}
+
+const goToExpenditureAccounts = (subId) => {
+    router.push({ name: 'expenditureaccounts.list', params: { activityId: route.params.activityId, subActivityId: subId } })
 }
 
 onBeforeMount(async () => {

@@ -7,5 +7,7 @@ func SeedAll(db *gorm.DB) {
 	SeedPrograms(db)
 	SeedActivities(db)
 	SeedSubActivities(db)
-	SeedSuperAdmin(db)
+	SeedExpenditureAccounts(db)
+	SeedItems(db)
+	SeedUsers(db)
 }

@@ -11,7 +11,7 @@
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Laporan</router-link>
             <router-link v-if="isSuperadmin" :to="{ name: 'organization.list' }"
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Organisasi</router-link>
-            <router-link v-if="isSuperadmin" :to="{ name: 'program.list' }"
+            <router-link v-if="isAdminOrSuper" :to="{ name: 'program.list' }"
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Program</router-link>
             <router-link v-if="isSuperadmin" :to="{ name: 'users.list' }"
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Pengguna</router-link>

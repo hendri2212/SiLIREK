@@ -25,6 +25,13 @@ func SeedPrograms(db *gorm.DB) error {
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		},
+		{
+			Code:           "7.01.03",
+			Name:           "PROGRAM PEMBERDAYAAN MASYARAKAT DESA DAN KELURAHAN",
+			OrganizationID: org.ID,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
+		},
 	}
 
 	for _, prog := range programs {

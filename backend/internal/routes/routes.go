@@ -42,6 +42,8 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB) {
 	organizationsHandler := handlers.OrganizationsHandler(db)
 	programsHandler := handlers.ProgramsHandler(db)
 	subActivitiesHandler := handlers.SubActivitiesHandler(db)
+	expenditureAccountsHandler := handlers.ExpenditureAccountsHandler(db)
+	itemsHandler := handlers.ItemsHandler(db)
 
 	api := router.Group("/api")
 	{
@@ -71,6 +73,18 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB) {
 		api.GET("/sub-activity/:id", subActivitiesHandler.GetSubActivityByID)
 		api.PUT("/sub-activity/:id", subActivitiesHandler.UpdateSubActivity)
 		api.DELETE("/sub-activity/:id", subActivitiesHandler.DeleteSubActivity)
+
+		api.GET("/expenditure-account", expenditureAccountsHandler.GetExpenditureAccounts)
+		api.POST("/expenditure-account", expenditureAccountsHandler.CreateExpenditureAccount)
+		api.GET("/expenditure-account/:id", expenditureAccountsHandler.GetExpenditureAccountByID)
+		api.PUT("/expenditure-account/:id", expenditureAccountsHandler.UpdateExpenditureAccount)
+		api.DELETE("/expenditure-account/:id", expenditureAccountsHandler.DeleteExpenditureAccount)
+
+		api.GET("/item", itemsHandler.GetItems)
+		api.POST("/item", itemsHandler.CreateItem)
+		api.GET("/item/:id", itemsHandler.GetItemByID)
+		api.PUT("/item/:id", itemsHandler.UpdateItem)
+		api.DELETE("/item/:id", itemsHandler.DeleteItem)
 
 		api.GET("/organization", organizationsHandler.GetOrganizations)
 		api.POST("/organization", organizationsHandler.CreateOrganization)

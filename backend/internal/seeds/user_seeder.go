@@ -1,6 +1,7 @@
 package seeds
 
 import (
+	"log"
 	"time"
 
 	"silirek/internal/models"
@@ -9,33 +10,63 @@ import (
 	"gorm.io/gorm"
 )
 
-// SeedSuperAdmin membuat user superadmin dengan nip, position_id, leader_id null
-func SeedSuperAdmin(db *gorm.DB) error {
-	// Cek dulu apakah superadmin sudah ada
-	var count int64
-	db.Model(&models.User{}).
-		Where("role = ?", "superadmin").
-		Count(&count)
-	if count > 0 {
-		return nil // sudah pernah di‐seed
-	}
-
-	// Hash default password (ganti dengan env var jika perlu)
+// SeedUsers membuat akun superadmin, admin, dan user
+func SeedUsers(db *gorm.DB) error {
+	// Hash default password
 	pwd, err := bcrypt.GenerateFromPassword([]byte("Secret@123"), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
 
-	super := models.User{
-		FullName:   "Super Admin",
-		Email:      "arifin.hendri465@gmail.com",
-		Password:   string(pwd),
-		Nip:            nil, // pointer nil => NULL in DB
-		OrganizationID: nil, // pointer nil => NULL in DB
-		Role:       models.UserRoleSuperadmin,
-		CreatedAt:  time.Now(),
-		UpdatedAt:  time.Now(),
+	// Ambil ID Organisasi untuk admin dan user
+	var org models.Organization
+	orgID := (*uint)(nil)
+	if err := db.Where("number = ?", "7.01.0.00.0.00.51.0000").First(&org).Error; err == nil {
+		orgID = &org.ID
+	} else {
+		log.Println("Peringatan: Organisasi tidak ditemukan, admin dan user akan diset tanpa organisasi.")
 	}
 
-	return db.Create(&super).Error
+	users := []models.User{
+		{
+			FullName:       "Super Admin",
+			Email:          "arifin.hendri465@gmail.com",
+			Password:       string(pwd),
+			Nip:            nil,
+			OrganizationID: nil, // Superadmin bebas dari organisasi
+			Role:           models.UserRoleSuperadmin,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
+		},
+		{
+			FullName:       "Admin Instansi",
+			Email:          "admin@gmail.com",
+			Password:       string(pwd),
+			Nip:            nil,
+			OrganizationID: orgID,
+			Role:           models.UserRoleAdmin,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
+		},
+		{
+			FullName:       "User Pegawai",
+			Email:          "user@gmail.com",
+			Password:       string(pwd),
+			Nip:            nil,
+			OrganizationID: orgID,
+			Role:           models.UserRoleUser,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
+		},
+	}
+
+	for _, u := range users {
+		var count int64
+		db.Model(&models.User{}).Where("email = ?", u.Email).Count(&count)
+		if count == 0 {
+			db.Create(&u)
+		}
+	}
+
+	return nil
 }

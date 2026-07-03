@@ -84,6 +84,40 @@ const router = createRouter({
                     name: 'subactivities.edit',
                     component: () => import('../components/activities/SubActivitiesEdit.vue'),
                     meta: { requiresRole: ['admin', 'superadmin'] }
+                },
+                {
+                    path: ':activityId/sub-activities/:subActivityId/expenditure-accounts',
+                    name: 'expenditureaccounts.list',
+                    component: () => import('../components/activities/ExpenditureAccounts.vue'),
+                },
+                {
+                    path: ':activityId/sub-activities/:subActivityId/expenditure-accounts/create',
+                    name: 'expenditureaccounts.create',
+                    component: () => import('../components/activities/ExpenditureAccountsCreate.vue'),
+                    meta: { requiresRole: ['admin', 'superadmin'] }
+                },
+                {
+                    path: ':activityId/sub-activities/:subActivityId/expenditure-accounts/:accountId/edit',
+                    name: 'expenditureaccounts.edit',
+                    component: () => import('../components/activities/ExpenditureAccountsEdit.vue'),
+                    meta: { requiresRole: ['admin', 'superadmin'] }
+                },
+                {
+                    path: ':activityId/sub-activities/:subActivityId/expenditure-accounts/:accountId/items',
+                    name: 'items.list',
+                    component: () => import('../components/activities/Items.vue'),
+                },
+                {
+                    path: ':activityId/sub-activities/:subActivityId/expenditure-accounts/:accountId/items/create',
+                    name: 'items.create',
+                    component: () => import('../components/activities/ItemsCreate.vue'),
+                    meta: { requiresRole: ['admin', 'superadmin'] }
+                },
+                {
+                    path: ':activityId/sub-activities/:subActivityId/expenditure-accounts/:accountId/items/:itemId/edit',
+                    name: 'items.edit',
+                    component: () => import('../components/activities/ItemsEdit.vue'),
+                    meta: { requiresRole: ['admin', 'superadmin'] }
                 }
             ]
         },
@@ -127,7 +161,7 @@ const router = createRouter({
             path: '/program',
             name: 'program',
             component: () => import('../views/ProgramView.vue'),
-            meta: { requiresAuth: true, requiresRole: ['superadmin'] },
+            meta: { requiresAuth: true, requiresRole: ['admin', 'superadmin'] },
             children: [
                 {
                     path: '',
