@@ -6,40 +6,31 @@
                 
                 <div class="card-body p-4 p-md-5">
                     <div class="d-flex align-items-center mb-4">
-                        <router-link :to="{ name: 'organization.list' }" class="btn btn-light rounded-circle me-3 d-flex align-items-center justify-content-center hover-lift" style="width: 45px; height: 45px;" title="Kembali">
+                        <router-link :to="{ name: 'subactivities.list', params: { activityId: route.params.activityId } }" class="btn btn-light rounded-circle me-3 d-flex align-items-center justify-content-center hover-lift" style="width: 45px; height: 45px;" title="Kembali">
                             <i class="bi bi-arrow-left fs-5 text-dark"></i>
                         </router-link>
                         <div>
-                            <h4 class="card-title text-dark fw-bold mb-1">Tambah Organisasi</h4>
-                            <p class="text-muted small mb-0">Masukkan detail organisasi baru ke dalam sistem</p>
+                            <h4 class="card-title text-dark fw-bold mb-1">Tambah Sub Kegiatan</h4>
+                            <p class="text-muted small mb-0">Masukkan detail sub kegiatan baru ke dalam sistem</p>
                         </div>
                     </div>
 
-                    <form @submit.prevent="createOrganization" class="mt-4">
+                    <form @submit.prevent="createSubActivity" class="mt-4">
                         <div class="form-floating mb-4">
-                            <input type="text" v-model="form.name" class="form-control custom-input" id="name" required
-                                placeholder="Nama Organisasi">
-                            <label for="name" class="text-muted"><i class="bi bi-building me-1"></i> Nama Organisasi</label>
+                            <input type="text" class="form-control custom-input" id="code" v-model="subActivity.code"
+                                placeholder="Kode Sub Kegiatan" required>
+                            <label for="code" class="text-muted"><i class="bi bi-hash me-1"></i> Kode Sub Kegiatan</label>
                         </div>
-
-                        <div class="form-floating mb-4">
-                            <input type="text" v-model="form.number" class="form-control custom-input" id="number" required
-                                placeholder="Nomor Organisasi">
-                            <label for="number" class="text-muted"><i class="bi bi-123 me-1"></i> Nomor Organisasi</label>
-                        </div>
-
+                        
                         <div class="form-floating mb-5">
-                            <select v-model.number="form.parent_id" class="form-select custom-input" id="parent_id">
-                                <option :value="null">-- Tidak Ada (Sebagai Induk Utama) --</option>
-                                <option v-for="org in organizations" :key="org.id" :value="org.id">
-                                    {{ org.number }} - {{ org.name }}
-                                </option>
-                            </select>
-                            <label for="parent_id" class="text-muted"><i class="bi bi-diagram-3 me-1"></i> Induk Organisasi (Opsional)</label>
+                            <input type="text" class="form-control custom-input" id="name" v-model="subActivity.name"
+                                placeholder="Nama Sub Kegiatan" required>
+                            <label for="name" class="text-muted"><i class="bi bi-card-text me-1"></i> Nama Sub Kegiatan</label>
                         </div>
-
+                        
                         <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
-                            <router-link :to="{ name: 'organization.list' }" class="btn btn-light px-4 py-2 rounded-pill fw-medium hover-lift">
+                            <router-link :to="{ name: 'subactivities.list', params: { activityId: route.params.activityId } }"
+                                class="btn btn-light px-4 py-2 rounded-pill fw-medium hover-lift">
                                 Batal
                             </router-link>
                             <button type="submit" class="btn btn-info text-white px-4 py-2 rounded-pill fw-bold d-flex align-items-center gap-2 hover-lift shadow-sm">
@@ -55,46 +46,33 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { reactive } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import api from '@/plugins/axios'
 
 const router = useRouter()
-const organizations = ref([])
+const route = useRoute()
 
-const form = ref({
+const subActivity = reactive({
+    code: '',
     name: '',
-    number: '',
-    parent_id: null
+    activity_id: Number(route.params.activityId)
 })
 
-const fetchOrganizations = async () => {
+const createSubActivity = async () => {
     try {
-        const response = await api.get('/organization')
-        organizations.value = response.data
+        await api.post('/sub-activity', subActivity)
+        alert('Sub Kegiatan berhasil ditambahkan')
+        router.push({ name: 'subactivities.list', params: { activityId: route.params.activityId } })
     } catch (error) {
-        console.error('Error fetching organizations:', error)
-    }
-}
-
-const createOrganization = async () => {
-    try {
-        await api.post('/organization', form.value)
-        alert('Organisasi berhasil ditambahkan')
-        router.push({ name: 'organization.list' })
-    } catch (error) {
-        console.error('Error creating organization:', error)
+        console.error('Error creating sub activity:', error)
         if (error.response && error.response.data && error.response.data.error) {
             alert(error.response.data.error)
         } else {
-            alert('Terjadi kesalahan saat menyimpan organisasi')
+            alert('Gagal menambahkan sub kegiatan.')
         }
     }
 }
-
-onMounted(() => {
-    fetchOrganizations()
-})
 </script>
 
 <style scoped>

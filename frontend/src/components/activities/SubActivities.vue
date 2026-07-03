@@ -1,14 +1,31 @@
 <template>
-    <div class="activities-container pb-5">
+    <div class="sub-activities-container pb-5">
         <div class="mb-5 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
             <div>
-                <h3 class="fw-bold text-dark mb-1">Daftar Kegiatan</h3>
-                <p class="text-muted mb-0">Manajemen seluruh kegiatan yang terdaftar dalam sistem.</p>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item">
+                            <router-link :to="{ name: 'activities.list' }" class="text-decoration-none text-muted">Kegiatan</router-link>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">Sub Kegiatan</li>
+                    </ol>
+                </nav>
+                <h3 class="fw-bold text-dark mb-1">
+                    {{ parentActivity ? parentActivity.name : 'Memuat...' }}
+                </h3>
+                <p class="text-muted mb-0">Manajemen sub kegiatan untuk kegiatan ini.</p>
             </div>
-            <router-link v-if="isAdminOrSuper" class="btn btn-info text-white rounded-pill px-4 py-2 shadow-sm fw-medium d-flex align-items-center gap-2 hover-lift" :to="{ name: 'activities.create' }">
-                <i class="bi bi-plus-circle fs-5"></i>
-                <span>Tambah Kegiatan Baru</span>
-            </router-link>
+            
+            <div class="d-flex align-items-center gap-3">
+                <router-link class="btn btn-white border-0 bg-white rounded-circle shadow-sm d-flex align-items-center justify-content-center hover-lift" style="width: 45px; height: 45px;" :to="{ name: 'activities.list' }" title="Kembali ke Daftar Kegiatan">
+                    <i class="bi bi-arrow-left fs-5 text-dark"></i>
+                </router-link>
+                
+                <router-link v-if="isAdminOrSuper" class="btn btn-info text-white rounded-pill px-4 py-2 shadow-sm fw-bold d-flex align-items-center gap-2 hover-lift" :to="{ name: 'subactivities.create', params: { activityId: route.params.activityId } }">
+                    <i class="bi bi-plus-lg fs-6"></i>
+                    <span>Tambah</span>
+                </router-link>
+            </div>
         </div>
 
         <div v-if="isLoading" class="d-flex justify-content-center align-items-center" style="min-height: 300px;">
@@ -17,21 +34,20 @@
             </div>
         </div>
 
-        <div v-else-if="activities.length === 0" class="text-center py-5 bg-white rounded-4 shadow-sm border-0 empty-state">
-            <div class="display-1 text-info opacity-50 mb-3"><i class="bi bi-inboxes-fill"></i></div>
-            <h5 class="fw-bold text-dark">Belum ada kegiatan</h5>
-            <p class="text-muted mb-4">Data kegiatan saat ini masih kosong di dalam sistem.</p>
-            <router-link v-if="isAdminOrSuper" :to="{ name: 'activities.create' }" class="btn btn-outline-info rounded-pill px-4 py-2 fw-medium hover-lift">
-                Buat Kegiatan Pertama
+        <div v-else-if="subActivities.length === 0" class="text-center py-5 bg-white rounded-4 shadow-sm border-0 empty-state">
+            <div class="display-1 text-info opacity-50 mb-3"><i class="bi bi-node-plus-fill"></i></div>
+            <h5 class="fw-bold text-dark">Belum ada sub kegiatan</h5>
+            <p class="text-muted mb-4">Belum ada sub kegiatan yang terdaftar untuk kegiatan ini.</p>
+            <router-link v-if="isAdminOrSuper" :to="{ name: 'subactivities.create', params: { activityId: route.params.activityId } }" class="btn btn-outline-info rounded-pill px-4 py-2 fw-medium hover-lift">
+                Buat Sub Kegiatan Pertama
             </router-link>
         </div>
 
         <div v-else class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-            <div class="col" v-for="(data, index) in activities" :key="data.id">
-                <div class="card h-100 border-0 shadow-sm rounded-4 activity-card position-relative overflow-hidden" style="cursor: pointer;" @click="goToSubActivities(data.id)">
-                    <!-- Decorative background element -->
+            <div class="col" v-for="(data, index) in subActivities" :key="data.id">
+                <div class="card h-100 border-0 shadow-sm rounded-4 activity-card position-relative overflow-hidden">
                     <div class="position-absolute top-0 end-0 p-3 text-info opacity-10" style="transform: translate(20%, -20%); pointer-events: none;">
-                        <i class="bi bi-activity" style="font-size: 8rem;"></i>
+                        <i class="bi bi-diagram-3-fill" style="font-size: 8rem;"></i>
                     </div>
                     
                     <div class="card-body p-4 d-flex flex-column z-1 position-relative">
@@ -44,24 +60,24 @@
                             </div>
                         </div>
                         
-                        <h5 class="card-title fw-bold text-dark mb-4 flex-grow-1" style="line-height: 1.5; font-size: 1.25rem;">
+                        <h5 class="card-title fw-bold text-dark mb-4 flex-grow-1" style="line-height: 1.5; font-size: 1.15rem;">
                             {{ data.name }}
                         </h5>
                         
                         <div class="divider mb-3"></div>
                         
-                        <div v-if="isAdminOrSuper" class="d-flex gap-2 justify-content-end mt-auto" @click.stop>
-                            <router-link :to="{ name: 'activities.edit', params: { id: data.id } }"
+                        <div v-if="isAdminOrSuper" class="d-flex gap-2 justify-content-end mt-auto">
+                            <router-link :to="{ name: 'subactivities.edit', params: { activityId: route.params.activityId, subActivityId: data.id } }"
                                 class="btn btn-light text-warning fw-bold rounded-pill px-3 py-2 shadow-sm btn-action w-50">
                                 <i class="bi bi-pencil-fill me-1"></i> Edit
                             </router-link>
-                            <button class="btn btn-light text-danger fw-bold rounded-pill px-3 py-2 shadow-sm btn-action w-50" @click.stop="deleteActivity(data.id)">
+                            <button class="btn btn-light text-danger fw-bold rounded-pill px-3 py-2 shadow-sm btn-action w-50" @click="deleteSubActivity(data.id)">
                                 <i class="bi bi-trash-fill me-1"></i> Hapus
                             </button>
                         </div>
                         <div v-else class="d-flex align-items-center justify-content-end text-success mt-auto p-2 bg-success-subtle rounded-pill">
                             <i class="bi bi-check-circle-fill me-2 ms-2"></i>
-                            <span class="small fw-bold me-2">Kegiatan Terdaftar</span>
+                            <span class="small fw-bold me-2">Sub Kegiatan Aktif</span>
                         </div>
                     </div>
                 </div>
@@ -72,52 +88,59 @@
 
 <script setup>
 import { ref, onBeforeMount, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/plugins/axios'
 
-const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 const isAdminOrSuper = computed(() => authStore.user?.role === 'superadmin' || authStore.user?.role === 'admin')
 
 const isLoading = ref(true)
-const activities = ref([])
+const subActivities = ref([])
+const parentActivity = ref(null)
 
-const fetchActivities = async () => {
+const fetchParentActivity = async () => {
     try {
-        const response = await api.get('/activity')
-        activities.value = response.data
+        const response = await api.get(`/activity/${route.params.activityId}`)
+        parentActivity.value = response.data
     } catch (error) {
-        console.error('Error fetching activities:', error)
+        console.error('Error fetching parent activity:', error)
+    }
+}
+
+const fetchSubActivities = async () => {
+    try {
+        const response = await api.get(`/sub-activity?activity_id=${route.params.activityId}`)
+        subActivities.value = response.data
+    } catch (error) {
+        console.error('Error fetching sub activities:', error)
     } finally {
         isLoading.value = false
     }
 }
 
-const deleteActivity = async (id) => {
-    if (confirm('Apakah Anda yakin ingin menghapus kegiatan ini?')) {
+const deleteSubActivity = async (id) => {
+    if (confirm('Apakah Anda yakin ingin menghapus sub kegiatan ini?')) {
         try {
-            await api.delete(`/activity/${id}`)
-            alert('Kegiatan berhasil dihapus')
-            await fetchActivities()
+            await api.delete(`/sub-activity/${id}`)
+            alert('Sub Kegiatan berhasil dihapus')
+            await fetchSubActivities()
         } catch (error) {
-            console.error('Error deleting activity:', error)
-            alert('Gagal menghapus kegiatan.')
+            console.error('Error deleting sub activity:', error)
+            alert('Gagal menghapus sub kegiatan.')
         }
     }
 }
 
-const goToSubActivities = (id) => {
-    router.push({ name: 'subactivities.list', params: { activityId: id } })
-}
-
-onBeforeMount(() => {
-    fetchActivities()
+onBeforeMount(async () => {
+    await fetchParentActivity()
+    await fetchSubActivities()
 })
 </script>
 
 <style scoped>
-.activities-container {
+.sub-activities-container {
     animation: fadeIn 0.4s ease-out;
 }
 

@@ -6,12 +6,12 @@
                 
                 <div class="card-body p-4 p-md-5">
                     <div class="d-flex align-items-center mb-4">
-                        <router-link :to="{ name: 'program.list' }" class="btn btn-light rounded-circle me-3 d-flex align-items-center justify-content-center hover-lift" style="width: 45px; height: 45px;" title="Kembali">
+                        <router-link :to="{ name: 'subactivities.list', params: { activityId: route.params.activityId } }" class="btn btn-light rounded-circle me-3 d-flex align-items-center justify-content-center hover-lift" style="width: 45px; height: 45px;" title="Kembali">
                             <i class="bi bi-arrow-left fs-5 text-dark"></i>
                         </router-link>
                         <div>
-                            <h4 class="card-title text-dark fw-bold mb-1">Edit Program</h4>
-                            <p class="text-muted small mb-0">Perbarui detail data program ini</p>
+                            <h4 class="card-title text-dark fw-bold mb-1">Edit Sub Kegiatan</h4>
+                            <p class="text-muted small mb-0">Perbarui detail data sub kegiatan ini</p>
                         </div>
                     </div>
 
@@ -21,31 +21,22 @@
                         </div>
                     </div>
 
-                    <form v-else @submit.prevent="updateProgram" class="mt-4">
+                    <form v-else @submit.prevent="updateSubActivity" class="mt-4">
                         <div class="form-floating mb-4">
-                            <input type="text" v-model="form.code" class="form-control custom-input" id="code" required
-                                placeholder="Kode Program">
-                            <label for="code" class="text-muted"><i class="bi bi-hash me-1"></i> Kode Program</label>
+                            <input type="text" class="form-control custom-input" id="code" v-model="subActivity.code"
+                                placeholder="Kode Sub Kegiatan" required>
+                            <label for="code" class="text-muted"><i class="bi bi-hash me-1"></i> Kode Sub Kegiatan</label>
                         </div>
-
-                        <div class="form-floating mb-4">
-                            <input type="text" v-model="form.name" class="form-control custom-input" id="name" required
-                                placeholder="Nama Program">
-                            <label for="name" class="text-muted"><i class="bi bi-card-text me-1"></i> Nama Program</label>
-                        </div>
-
+                        
                         <div class="form-floating mb-5">
-                            <select v-model.number="form.organization_id" class="form-select custom-input" id="organization_id" required>
-                                <option value="" disabled>-- Pilih Organisasi --</option>
-                                <option v-for="org in organizations" :key="org.id" :value="org.id">
-                                    {{ org.number }} - {{ org.name }}
-                                </option>
-                            </select>
-                            <label for="organization_id" class="text-muted"><i class="bi bi-diagram-3-fill me-1"></i> Organisasi Terkait</label>
+                            <input type="text" class="form-control custom-input" id="name" v-model="subActivity.name"
+                                placeholder="Nama Sub Kegiatan" required>
+                            <label for="name" class="text-muted"><i class="bi bi-card-text me-1"></i> Nama Sub Kegiatan</label>
                         </div>
-
+                        
                         <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
-                            <router-link :to="{ name: 'program.list' }" class="btn btn-light px-4 py-2 rounded-pill fw-medium hover-lift">
+                            <router-link :to="{ name: 'subactivities.list', params: { activityId: route.params.activityId } }"
+                                class="btn btn-light px-4 py-2 rounded-pill fw-medium hover-lift">
                                 Batal
                             </router-link>
                             <button type="submit" class="btn btn-warning text-dark px-4 py-2 rounded-pill fw-bold d-flex align-items-center gap-2 hover-lift shadow-sm">
@@ -61,60 +52,53 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onBeforeMount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import api from '@/plugins/axios'
 
 const router = useRouter()
 const route = useRoute()
-const programId = parseInt(route.params.id)
 
-const organizations = ref([])
 const isLoading = ref(true)
 
-const form = ref({
+const subActivity = reactive({
     code: '',
     name: '',
-    organization_id: ''
+    activity_id: Number(route.params.activityId)
 })
 
-const fetchData = async () => {
+const fetchSubActivity = async () => {
     try {
-        const orgsResponse = await api.get('/organization')
-        organizations.value = orgsResponse.data
-
-        const response = await api.get(`/program/${programId}`)
-        const data = response.data
-        
-        form.value.code = data.code
-        form.value.name = data.name
-        form.value.organization_id = data.organization_id
+        const response = await api.get(`/sub-activity/${route.params.subActivityId}`)
+        subActivity.code = response.data.code
+        subActivity.name = response.data.name
+        subActivity.activity_id = response.data.activity_id
     } catch (error) {
-        console.error('Error fetching data:', error)
-        alert('Gagal mengambil data')
-        router.push({ name: 'program.list' })
+        console.error('Error fetching sub activity:', error)
+        alert('Gagal mengambil data sub kegiatan.')
+        router.push({ name: 'subactivities.list', params: { activityId: route.params.activityId } })
     } finally {
         isLoading.value = false
     }
 }
 
-const updateProgram = async () => {
+const updateSubActivity = async () => {
     try {
-        await api.put(`/program/${programId}`, form.value)
-        alert('Program berhasil diperbarui')
-        router.push({ name: 'program.list' })
+        await api.put(`/sub-activity/${route.params.subActivityId}`, subActivity)
+        alert('Sub Kegiatan berhasil diupdate')
+        router.push({ name: 'subactivities.list', params: { activityId: route.params.activityId } })
     } catch (error) {
-        console.error('Error updating program:', error)
+        console.error('Error updating sub activity:', error)
         if (error.response && error.response.data && error.response.data.error) {
             alert(error.response.data.error)
         } else {
-            alert('Terjadi kesalahan saat memperbarui program')
+            alert('Gagal mengupdate sub kegiatan.')
         }
     }
 }
 
-onMounted(() => {
-    fetchData()
+onBeforeMount(() => {
+    fetchSubActivity()
 })
 </script>
 

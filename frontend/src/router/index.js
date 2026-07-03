@@ -68,6 +68,23 @@ const router = createRouter({
                     component: () => import('../components/activities/ActivitiesEdit.vue'),
                     meta: { requiresRole: ['admin', 'superadmin'] }
                 },
+                {
+                    path: ':activityId/sub-activities',
+                    name: 'subactivities.list',
+                    component: () => import('../components/activities/SubActivities.vue'),
+                },
+                {
+                    path: ':activityId/sub-activities/create',
+                    name: 'subactivities.create',
+                    component: () => import('../components/activities/SubActivitiesCreate.vue'),
+                    meta: { requiresRole: ['admin', 'superadmin'] }
+                },
+                {
+                    path: ':activityId/sub-activities/:subActivityId/edit',
+                    name: 'subactivities.edit',
+                    component: () => import('../components/activities/SubActivitiesEdit.vue'),
+                    meta: { requiresRole: ['admin', 'superadmin'] }
+                }
             ]
         },
         {
