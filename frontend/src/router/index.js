@@ -21,7 +21,7 @@ const router = createRouter({
             path: '/users',
             name: 'users',
             component: () => import('../views/UsersView.vue'),
-            meta: { requiresAuth: true, requiresRole: ['admin', 'superadmin'] },
+            meta: { requiresAuth: true, requiresRole: ['superadmin'] },
             children: [
                 {
                     path: '',
@@ -49,7 +49,7 @@ const router = createRouter({
             path: '/activities',
             name: 'activities',
             component: () => import('../views/ActivitiesView.vue'),
-            meta: { requiresAuth: true, requiresRole: ['admin', 'superadmin'] },
+            meta: { requiresAuth: true },
             children: [
                 {
                     path: '',
@@ -60,11 +60,13 @@ const router = createRouter({
                     path: 'create',
                     name: 'activities.create',
                     component: () => import('../components/activities/ActivitiesCreate.vue'),
+                    meta: { requiresRole: ['admin', 'superadmin'] }
                 },
                 {
                     path: ':id/edit',
                     name: 'activities.edit',
                     component: () => import('../components/activities/ActivitiesEdit.vue'),
+                    meta: { requiresRole: ['admin', 'superadmin'] }
                 },
             ]
         },
@@ -127,6 +129,29 @@ const router = createRouter({
                     path: 'edit/:id',
                     name: 'organization.edit',
                     component: () => import('../components/organization/OrganizationEdit.vue'),
+                }
+            ]
+        },
+        {
+            path: '/program',
+            name: 'program',
+            component: () => import('../views/ProgramView.vue'),
+            meta: { requiresAuth: true, requiresRole: ['superadmin'] },
+            children: [
+                {
+                    path: '',
+                    name: 'program.list',
+                    component: () => import('../components/program/Program.vue'),
+                },
+                {
+                    path: 'create',
+                    name: 'program.create',
+                    component: () => import('../components/program/ProgramCreate.vue'),
+                },
+                {
+                    path: 'edit/:id',
+                    name: 'program.edit',
+                    component: () => import('../components/program/ProgramEdit.vue'),
                 }
             ]
         },

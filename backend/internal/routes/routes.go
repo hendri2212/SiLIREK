@@ -40,6 +40,7 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB) {
 	userHandler := handlers.UsersHandler(db)
 	activitiesHandler := handlers.ActivitiesHandler(db)
 	organizationsHandler := handlers.OrganizationsHandler(db)
+	programsHandler := handlers.ProgramsHandler(db)
 
 	api := router.Group("/api")
 	{
@@ -60,11 +61,20 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB) {
 
 		api.GET("/activity", activitiesHandler.GetActivities)
 		api.POST("/activity", activitiesHandler.CreateActivity)
+		api.GET("/activity/:id", activitiesHandler.GetActivityByID)
+		api.PUT("/activity/:id", activitiesHandler.UpdateActivity)
+		api.DELETE("/activity/:id", activitiesHandler.DeleteActivity)
 
 		api.GET("/organization", organizationsHandler.GetOrganizations)
 		api.POST("/organization", organizationsHandler.CreateOrganization)
 		api.GET("/organization/:id", organizationsHandler.GetOrganizationByID)
 		api.PUT("/organization/:id", organizationsHandler.UpdateOrganization)
 		api.DELETE("/organization/:id", organizationsHandler.DeleteOrganization)
+
+		api.GET("/program", programsHandler.GetPrograms)
+		api.POST("/program", programsHandler.CreateProgram)
+		api.GET("/program/:id", programsHandler.GetProgramByID)
+		api.PUT("/program/:id", programsHandler.UpdateProgram)
+		api.DELETE("/program/:id", programsHandler.DeleteProgram)
 	}
 }

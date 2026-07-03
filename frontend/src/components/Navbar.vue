@@ -5,9 +5,9 @@
         </a>
 
         <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto align-items-center">
-            <router-link v-if="isAdminOrSuper" :to="{ name: 'users.list' }"
+            <router-link v-if="isSuperadmin" :to="{ name: 'users.list' }"
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Pengguna</router-link>
-            <router-link v-if="isAdminOrSuper" :to="{ name: 'activities.list' }"
+            <router-link :to="{ name: 'activities.list' }"
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Kegiatan</router-link>
             <router-link v-if="isAdminOrSuper" :to="{ name: 'budgeting.list' }"
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Penganggaran</router-link>
@@ -17,6 +17,8 @@
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Laporan</router-link>
             <router-link v-if="isSuperadmin" :to="{ name: 'organization.list' }"
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Organisasi</router-link>
+            <router-link v-if="isSuperadmin" :to="{ name: 'program.list' }"
+                class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Program</router-link>
             <div v-if="$route.name != 'login'" class="dropdown">
                 <a class="btn p-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <img v-if="auth.user?.photo" :src="`${baseApiUrl}/uploads/photos/${auth.user.photo}`" alt="Profile"

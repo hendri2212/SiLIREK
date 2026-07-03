@@ -15,7 +15,14 @@
                         required>
                     <label for="floatingNameActivity">Nama Kegiatan</label>
                 </div>
-                <button class="w-100 btn btn-lg btn-info text-white" type="submit">Tambah Kegiatan</button>
+                <div class="d-flex justify-content-end">
+                    <router-link :to="{ name: 'activities.list' }" class="btn btn-secondary me-2">
+                        Batal
+                    </router-link>
+                    <button type="submit" class="btn btn-info text-white">
+                        <i class="bi bi-floppy-fill me-1"></i> Simpan
+                    </button>
+                </div>
             </form>
         </div>
     </div>
