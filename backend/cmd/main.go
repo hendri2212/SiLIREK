@@ -32,8 +32,28 @@ func main() {
 
 	db := InitDB()
 
-	// Auto migrate
-	db.AutoMigrate(&models.Leader{}, &models.Position{})
+	// HATI-HATI: Hanya gunakan ini untuk development saat merombak database!
+	// Ini akan menghapus semua tabel dan membuatnya ulang dari awal.
+	db.Migrator().DropTable(
+		&models.Item{},
+		&models.ExpenditureAccount{},
+		&models.SubActivity{},
+		&models.Activity{},
+		&models.Program{},
+		&models.User{},
+		&models.Organization{},
+	)
+
+	// Auto migrate semua tabel
+	db.AutoMigrate(
+		&models.Organization{},
+		&models.User{},
+		&models.Program{},
+		&models.Activity{},
+		&models.SubActivity{},
+		&models.ExpenditureAccount{},
+		&models.Item{},
+	)
 
 	// Seed data
 	seeds.SeedAll(db)

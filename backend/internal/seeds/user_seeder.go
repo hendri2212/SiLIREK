@@ -30,9 +30,8 @@ func SeedSuperAdmin(db *gorm.DB) error {
 		FullName:   "Super Admin",
 		Email:      "arifin.hendri465@gmail.com",
 		Password:   string(pwd),
-		Nip:        nil, // pointer nil => NULL in DB
-		PositionID: nil, // pointer nil => NULL in DB
-		LeaderID:   nil, // pointer nil => NULL in DB
+		Nip:            nil, // pointer nil => NULL in DB
+		OrganizationID: nil, // pointer nil => NULL in DB
 		Role:       models.UserRoleSuperadmin,
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),

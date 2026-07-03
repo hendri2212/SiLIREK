@@ -32,7 +32,7 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
 	userRole := roleIfc.(string)
 
 	var users []models.User
-	dbQuery := h.db.Preload("Position").Preload("Leader").Model(&models.User{})
+	dbQuery := h.db.Preload("Organization").Model(&models.User{})
 
 	switch userRole {
 	case string(models.UserRoleSuperadmin):
@@ -104,7 +104,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 func (h *UserHandler) GetUserByID(c *gin.Context) {
 	id := c.Param("id")
 	var user models.User
-	if err := h.db.Preload("Position").Preload("Leader").First(&user, id).Error; err != nil {
+	if err := h.db.Preload("Organization").First(&user, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
 	}
@@ -137,18 +137,11 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		user.Nip = &nip[0]
 	}
 
-	// Tambahkan pengecekan untuk position_id dan leader_id
-	if positionID := form.Value["position_id"]; len(positionID) > 0 && positionID[0] != "" {
-		if idVal, err := strconv.ParseUint(positionID[0], 10, 64); err == nil {
-			posID := uint(idVal)
-			user.PositionID = &posID
-		}
-	}
-
-	if leaderID := form.Value["leader_id"]; len(leaderID) > 0 && leaderID[0] != "" {
-		if idVal, err := strconv.ParseUint(leaderID[0], 10, 64); err == nil {
-			leadID := uint(idVal)
-			user.LeaderID = &leadID
+	// Tambahkan pengecekan untuk organization_id
+	if organizationID := form.Value["organization_id"]; len(organizationID) > 0 && organizationID[0] != "" {
+		if idVal, err := strconv.ParseUint(organizationID[0], 10, 64); err == nil {
+			orgID := uint(idVal)
+			user.OrganizationID = &orgID
 		}
 	}
 
@@ -256,7 +249,7 @@ func (h *UserHandler) Me(c *gin.Context) {
 	userID := uint(claims["user_id"].(float64))
 
 	var user models.User
-	if err := h.db.Preload("Position").Preload("Leader").First(&user, userID).Error; err != nil {
+	if err := h.db.Preload("Organization").First(&user, userID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		return
 	}

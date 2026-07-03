@@ -17,10 +17,8 @@ type User struct {
 	Email      string    `json:"email" gorm:"unique;size:50"`
 	Password   string    `json:"password" gorm:"size:60"`
 	Nip        *string   `json:"nip" gorm:"size:25;default:NULL"`
-	PositionID *uint     `json:"position_id" gorm:"default:NULL"`
-	Position   *Position `json:"position" gorm:"foreignKey:PositionID;references:ID;constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT"`
-	LeaderID   *uint     `json:"leader_id" gorm:"default:NULL"`
-	Leader     *Leader   `json:"leader" gorm:"foreignKey:LeaderID;references:ID;constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT"`
+	OrganizationID *uint         `json:"organization_id" gorm:"default:NULL"`
+	Organization   *Organization `json:"organization" gorm:"foreignKey:OrganizationID;references:ID;constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT"`
 	Role       UserRole  `json:"role" gorm:"type:ENUM('superadmin','admin','user');default:'user'"`
 	Photo      *string   `json:"photo" gorm:"default:NULL"`
 	IsActive   bool      `json:"is_active" gorm:"default:true"`
