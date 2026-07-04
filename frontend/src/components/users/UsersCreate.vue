@@ -34,24 +34,14 @@
                             <label for="floatingNIP" class="text-muted"><i class="bi bi-credit-card-2-front me-1"></i> NIP</label>
                         </div>
                         
-                        <div class="form-floating mb-4">
-                            <select v-model.number="user.position_id" name="position" class="form-select custom-input" id="floatingPosition" required>
-                                <option value="" selected disabled>-- Pilih Jabatan --</option>
-                                <option v-for="position in positions" :key="position.id" :value="position.id">
-                                    {{ position.name }}
-                                </option>
-                            </select>
-                            <label for="floatingPosition" class="text-muted"><i class="bi bi-briefcase me-1"></i> Jabatan Kedinasan</label>
-                        </div>
-                        
                         <div class="form-floating mb-5">
-                            <select v-model.number="user.leader_id" name="leader" class="form-select custom-input" id="floatingLeader" required>
-                                <option value="" selected disabled>-- Pilih Kegiatan --</option>
-                                <option v-for="leader in leaders" :key="leader.id" :value="leader.id">
-                                    {{ leader.name }}
+                            <select v-model.number="user.organization_id" name="organization" class="form-select custom-input" id="floatingOrganization" required>
+                                <option value="" selected disabled>-- Pilih Organisasi --</option>
+                                <option v-for="org in organizations" :key="org.id" :value="org.id">
+                                    {{ org.name }}
                                 </option>
                             </select>
-                            <label for="floatingLeader" class="text-muted"><i class="bi bi-diagram-2 me-1"></i> Jabatan Kegiatan</label>
+                            <label for="floatingOrganization" class="text-muted"><i class="bi bi-building me-1"></i> Organisasi</label>
                         </div>
 
                         <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
@@ -81,34 +71,22 @@ const user = reactive({
     full_name: '',
     email: '',
     nip: '',
-    position_id: '',
-    leader_id: ''
+    organization_id: ''
 });
 
-const positions = ref([]);
-const leaders = ref([]);
+const organizations = ref([]);
 
-const fetchPositions = async () => {
+const fetchOrganizations = async () => {
     try {
-        const response = await api.get('/positions');
-        positions.value = response.data;
+        const response = await api.get('/organization');
+        organizations.value = response.data;
     } catch (error) {
-        console.error('Error fetching positions:', error);
-    }
-};
-
-const fetchLeaders = async () => {
-    try {
-        const response = await api.get('/leaders');
-        leaders.value = response.data;
-    } catch (error) {
-        console.error('Error fetching leaders:', error);
+        console.error('Error fetching organizations:', error);
     }
 };
 
 onMounted(() => {
-    // Jalankan secara paralel untuk performa terbaik
-    Promise.all([fetchPositions(), fetchLeaders()]);
+    fetchOrganizations();
 });
 
 const createUser = async () => {

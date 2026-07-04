@@ -40,8 +40,7 @@
                         <th class="text-center" style="width: 48px;">No</th>
                         <th>Nama Lengkap</th>
                         <th>Email</th>
-                        <th>Jabatan Kedinasan</th>
-                        <th>Jabatan Kegiatan</th>
+                        <th>Organisasi</th>
                         <th class="text-end">Aksi</th>
                     </tr>
                 </thead>
@@ -58,12 +57,11 @@
                         </td>
                         <td class="text-muted small">{{ user.email }}</td>
                         <td>
-                            <span v-if="user.position?.name" class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">
-                                {{ user.position.name }}
+                            <span v-if="user.organization?.name" class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3">
+                                {{ user.organization.name }}
                             </span>
                             <span v-else class="text-muted small">—</span>
                         </td>
-                        <td class="text-muted small">{{ user.leader?.name || '—' }}</td>
                         <td class="text-end">
                             <router-link
                                 :to="{ name: 'users.edit', params: { id: user.id } }"

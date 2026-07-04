@@ -11,29 +11,19 @@
                         </router-link>
                         <div>
                             <h4 class="card-title text-dark fw-bold mb-1">Edit Pengguna</h4>
-                            <p class="text-muted small mb-0">Perbarui posisi dan jabatan pengguna ini</p>
+                            <p class="text-muted small mb-0">Perbarui organisasi pengguna ini</p>
                         </div>
                     </div>
 
                     <form @submit.prevent="updateUser" class="mt-4">
-                        <div class="form-floating mb-4">
-                            <select v-model.number="user.position_id" name="position" class="form-select custom-input" id="floatingPosition" required>
-                                <option value="" selected disabled>-- Pilih Jabatan --</option>
-                                <option v-for="position in positions" :key="position.id" :value="position.id">
-                                    {{ position.name }}
-                                </option>
-                            </select>
-                            <label for="floatingPosition" class="text-muted"><i class="bi bi-briefcase me-1"></i> Jabatan Kedinasan</label>
-                        </div>
-                        
                         <div class="form-floating mb-5">
-                            <select v-model.number="user.leader_id" name="leader" class="form-select custom-input" id="floatingLeader" required>
-                                <option value="" selected disabled>-- Pilih Kegiatan --</option>
-                                <option v-for="leader in leaders" :key="leader.id" :value="leader.id">
-                                    {{ leader.name }}
+                            <select v-model.number="user.organization_id" name="organization" class="form-select custom-input" id="floatingOrganization" required>
+                                <option value="" selected disabled>-- Pilih Organisasi --</option>
+                                <option v-for="org in organizations" :key="org.id" :value="org.id">
+                                    {{ org.name }}
                                 </option>
                             </select>
-                            <label for="floatingLeader" class="text-muted"><i class="bi bi-diagram-2 me-1"></i> Jabatan Kegiatan</label>
+                            <label for="floatingOrganization" class="text-muted"><i class="bi bi-building me-1"></i> Organisasi</label>
                         </div>
 
                         <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">
@@ -61,28 +51,17 @@ const router = useRouter();
 const route = useRoute();
 
 const user = reactive({
-    position_id: '',
-    leader_id: ''
+    organization_id: ''
 });
 
-const positions = ref([]);
-const leaders = ref([]);
+const organizations = ref([]);
 
-const fetchPositions = async () => {
+const fetchOrganizations = async () => {
     try {
-        const response = await api.get('/positions');
-        positions.value = response.data;
+        const response = await api.get('/organization');
+        organizations.value = response.data;
     } catch (error) {
-        console.error('Error fetching positions:', error);
-    }
-};
-
-const fetchLeaders = async () => {
-    try {
-        const response = await api.get('/leaders');
-        leaders.value = response.data;
-    } catch (error) {
-        console.error('Error fetching leaders:', error);
+        console.error('Error fetching organizations:', error);
     }
 };
 
@@ -98,8 +77,9 @@ const getUser = async () => {
 const updateUser = async () => {
     try {
         const formData = new FormData();
-        formData.append('position_id', user.position_id);
-        formData.append('leader_id', user.leader_id);
+        if (user.organization_id) {
+            formData.append('organization_id', user.organization_id);
+        }
 
         await api.put(`/users/${route.params.id}`, formData, {
             headers: {
@@ -114,7 +94,7 @@ const updateUser = async () => {
 
 onMounted(() => {
     // Jalankan secara paralel untuk performa terbaik
-    Promise.all([getUser(), fetchPositions(), fetchLeaders()]);
+    Promise.all([getUser(), fetchOrganizations()]);
 });
 </script>
 
