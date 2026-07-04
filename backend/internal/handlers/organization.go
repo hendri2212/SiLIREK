@@ -13,7 +13,6 @@ type OrganizationHandler struct {
 }
 
 func OrganizationsHandler(db *gorm.DB) *OrganizationHandler {
-	db.AutoMigrate(&models.Organization{})
 	return &OrganizationHandler{db: db}
 }
 

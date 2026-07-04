@@ -13,7 +13,6 @@ type ExpenditureAccountHandler struct {
 }
 
 func ExpenditureAccountsHandler(db *gorm.DB) *ExpenditureAccountHandler {
-	db.AutoMigrate(&models.ExpenditureAccount{})
 	return &ExpenditureAccountHandler{db: db}
 }
 
@@ -32,7 +31,10 @@ func (h *ExpenditureAccountHandler) GetExpenditureAccounts(c *gin.Context) {
 		query = query.Where("sub_activity_id = ?", subActivityID)
 	}
 
-	query.Find(&accounts)
+	if err := query.Find(&accounts).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	var responses []ExpenditureAccountResponse
 	for _, account := range accounts {
@@ -62,7 +64,10 @@ func (h *ExpenditureAccountHandler) CreateExpenditureAccount(c *gin.Context) {
 		return
 	}
 
-	h.db.Create(&account)
+	if err := h.db.Create(&account).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusCreated, account)
 }
 

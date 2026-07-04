@@ -13,7 +13,6 @@ type ItemHandler struct {
 }
 
 func ItemsHandler(db *gorm.DB) *ItemHandler {
-	db.AutoMigrate(&models.Item{})
 	return &ItemHandler{db: db}
 }
 
@@ -26,7 +25,10 @@ func (h *ItemHandler) GetItems(c *gin.Context) {
 		query = query.Where("expenditure_account_id = ?", expenditureAccountID)
 	}
 
-	query.Order("date desc").Find(&items)
+	if err := query.Order("date desc").Find(&items).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, items)
 }
 
@@ -43,7 +45,10 @@ func (h *ItemHandler) CreateItem(c *gin.Context) {
 		return
 	}
 
-	h.db.Create(&item)
+	if err := h.db.Create(&item).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusCreated, item)
 }
 

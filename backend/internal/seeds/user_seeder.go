@@ -13,7 +13,12 @@ import (
 // SeedUsers membuat akun superadmin, admin, dan user
 func SeedUsers(db *gorm.DB) error {
 	// Hash default password
-	pwd, err := bcrypt.GenerateFromPassword([]byte("Secret@123"), bcrypt.DefaultCost)
+	pwdSuper, err := bcrypt.GenerateFromPassword([]byte("Secret@123"), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	
+	pwdOther, err := bcrypt.GenerateFromPassword([]byte("12345"), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
@@ -34,7 +39,7 @@ func SeedUsers(db *gorm.DB) error {
 		{
 			FullName:       "Super Admin",
 			Email:          "arifin.hendri465@gmail.com",
-			Password:       string(pwd),
+			Password:       string(pwdSuper),
 			Nip:            nil,
 			OrganizationID: nil, // Superadmin bebas dari organisasi
 			Role:           models.UserRoleSuperadmin,
@@ -45,7 +50,7 @@ func SeedUsers(db *gorm.DB) error {
 		{
 			FullName:       "Admin Instansi",
 			Email:          "admin@gmail.com",
-			Password:       string(pwd),
+			Password:       string(pwdOther),
 			Nip:            nil,
 			OrganizationID: orgID,
 			Role:           models.UserRoleAdmin,
@@ -56,7 +61,7 @@ func SeedUsers(db *gorm.DB) error {
 		{
 			FullName:       "User Pegawai",
 			Email:          "user@gmail.com",
-			Password:       string(pwd),
+			Password:       string(pwdOther),
 			Nip:            nil,
 			OrganizationID: orgID,
 			Role:           models.UserRoleUser,

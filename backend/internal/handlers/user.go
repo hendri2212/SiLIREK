@@ -1,12 +1,15 @@
 package handlers
 
 import (
+	"fmt"
 	"image"
 	"image/jpeg"
 	"image/png"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
+	"silirek/internal/config"
 	"silirek/internal/models"
 	"strconv"
 	"strings"
@@ -24,7 +27,6 @@ type UserHandler struct {
 }
 
 func UsersHandler(db *gorm.DB) *UserHandler {
-	db.AutoMigrate(&models.User{})
 	return &UserHandler{db: db}
 }
 
@@ -50,7 +52,7 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
 			string(models.UserRoleAdmin),
 		})
 	default:
-		// user biasa: mungkin hanya boleh lihat diri sendiri?
+		// user biasa: hanya boleh lihat diri sendiri
 		userID := c.GetUint("user_id")
 		dbQuery = dbQuery.Where("id = ?", userID)
 	}
@@ -78,7 +80,10 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	}
 	user.Password = string(hashedPassword)
 
-	h.db.Create(&user)
+	if err := h.db.Create(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusCreated, gin.H{
 		"id":    user.ID,
@@ -86,27 +91,6 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 	})
 }
 
-// Hanya user itu sendiri yang bisa lihat datanya
-// func (h *UserHandler) GetUserByID(c *gin.Context) {
-// 	idParam := c.Param("id")
-// 	requestedID, err := strconv.ParseUint(idParam, 10, 64)
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
-// 		return
-// 	}
-
-//		loggedInUserID := c.GetUint("user_id")
-//		if uint(requestedID) != loggedInUserID {
-//			c.JSON(http.StatusForbidden, gin.H{"error": "forbidden"})
-//			return
-//		}
-//		var user models.User
-//		if err := h.db.Preload("Position").Preload("Leader").First(&user, requestedID).Error; err != nil {
-//			c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
-//			return
-//		}
-//		c.JSON(http.StatusOK, user)
-//	}
 func (h *UserHandler) GetUserByID(c *gin.Context) {
 	id := c.Param("id")
 	var user models.User
@@ -171,48 +155,13 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 				return
 			}
 		}
+
 		photoFile := files[0]
-		
-		file, err := photoFile.Open()
+		filename, err := saveResizedPhoto(photoFile)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to open photo file"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		defer file.Close()
-
-		// Decode the image
-		img, _, err := image.Decode(file)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid image format"})
-			return
-		}
-
-		// Resize to maximum width 500px, preserving aspect ratio
-		m := resize.Resize(500, 0, img, resize.Lanczos3)
-
-		filename := time.Now().Format("20060102150405") + "_" + photoFile.Filename
-		savePath := "uploads/photos/" + filename
-		
-		out, err := os.Create(savePath)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create photo file"})
-			return
-		}
-		defer out.Close()
-
-		ext := strings.ToLower(filepath.Ext(photoFile.Filename))
-		if ext == ".png" {
-			err = png.Encode(out, m)
-		} else {
-			// default to jpeg with quality 80
-			err = jpeg.Encode(out, m, &jpeg.Options{Quality: 80})
-		}
-		
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to encode and save image"})
-			return
-		}
-		
 		user.Photo = &filename
 	}
 
@@ -232,20 +181,19 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	h.db.Delete(&user)
+	if err := h.db.Delete(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "user deleted"})
 }
 
-var jwtKey = []byte("secret_key") // Ganti dengan lebih aman untuk production
-
-type LoginInput struct {
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
 func (h *UserHandler) LoginUser(c *gin.Context) {
-	var input LoginInput
+	var input struct {
+		Email    string `json:"email" binding:"required"`
+		Password string `json:"password" binding:"required"`
+	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -274,7 +222,7 @@ func (h *UserHandler) LoginUser(c *gin.Context) {
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 	})
 
-	tokenString, err := token.SignedString(jwtKey)
+	tokenString, err := token.SignedString(config.JWTKey())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "could not create token"})
 		return
@@ -300,4 +248,49 @@ func (h *UserHandler) Me(c *gin.Context) {
 		"photo": user.Photo,
 		"role":  user.Role,
 	})
+}
+
+// saveResizedPhoto decodes, resizes (if needed) to max 500px wide, and saves the image.
+// It returns the saved filename or an error.
+func saveResizedPhoto(header *multipart.FileHeader) (string, error) {
+	f, err := header.Open()
+	if err != nil {
+		return "", fmt.Errorf("failed to open photo file")
+	}
+	defer f.Close()
+
+	img, _, err := image.Decode(f)
+	if err != nil {
+		return "", fmt.Errorf("invalid image format")
+	}
+
+	// Only resize if the image is wider than 500px
+	var processed image.Image
+	if img.Bounds().Dx() > 500 {
+		processed = resize.Resize(500, 0, img, resize.Lanczos3)
+	} else {
+		processed = img
+	}
+
+	filename := time.Now().Format("20060102150405") + "_" + header.Filename
+	savePath := "uploads/photos/" + filename
+
+	out, err := os.Create(savePath)
+	if err != nil {
+		return "", fmt.Errorf("failed to create photo file")
+	}
+	defer out.Close()
+
+	ext := strings.ToLower(filepath.Ext(header.Filename))
+	if ext == ".png" {
+		err = png.Encode(out, processed)
+	} else {
+		// default to jpeg with quality 80
+		err = jpeg.Encode(out, processed, &jpeg.Options{Quality: 80})
+	}
+	if err != nil {
+		return "", fmt.Errorf("failed to encode and save image")
+	}
+
+	return filename, nil
 }

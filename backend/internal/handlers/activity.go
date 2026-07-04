@@ -13,7 +13,6 @@ type ActivityHandler struct {
 }
 
 func ActivitiesHandler(db *gorm.DB) *ActivityHandler {
-	db.AutoMigrate(&models.Activity{})
 	return &ActivityHandler{db: db}
 }
 func (h *ActivityHandler) GetActivities(c *gin.Context) {
@@ -25,9 +24,12 @@ func (h *ActivityHandler) GetActivities(c *gin.Context) {
 
 func (h *ActivityHandler) GetActivitiesTree(c *gin.Context) {
 	var activities []models.Activity
-	h.db.Preload("SubActivities").
+	if err := h.db.Preload("SubActivities").
 		Preload("SubActivities.ExpenditureAccounts").
-		Find(&activities)
+		Find(&activities).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, activities)
 }

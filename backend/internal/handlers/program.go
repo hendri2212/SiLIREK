@@ -13,7 +13,6 @@ type ProgramHandler struct {
 }
 
 func ProgramsHandler(db *gorm.DB) *ProgramHandler {
-	db.AutoMigrate(&models.Program{})
 	return &ProgramHandler{db: db}
 }
 

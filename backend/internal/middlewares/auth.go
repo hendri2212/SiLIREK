@@ -4,13 +4,14 @@ import (
 	"net/http"
 	"strings"
 
+	"silirek/internal/config"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var jwtKey = []byte("secret_key") // samakan dengan yang di handler
-
 func AuthMiddleware() gin.HandlerFunc {
+	jwtKey := config.JWTKey()
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {

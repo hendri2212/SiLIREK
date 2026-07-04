@@ -13,7 +13,6 @@ type SubActivityHandler struct {
 }
 
 func SubActivitiesHandler(db *gorm.DB) *SubActivityHandler {
-	db.AutoMigrate(&models.SubActivity{})
 	return &SubActivityHandler{db: db}
 }
 
@@ -27,7 +26,10 @@ func (h *SubActivityHandler) GetSubActivities(c *gin.Context) {
 		query = query.Where("activity_id = ?", activityID)
 	}
 
-	query.Find(&subActivities)
+	if err := query.Find(&subActivities).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, subActivities)
 }
 
@@ -44,7 +46,10 @@ func (h *SubActivityHandler) CreateSubActivity(c *gin.Context) {
 		return
 	}
 
-	h.db.Create(&subActivity)
+	if err := h.db.Create(&subActivity).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusCreated, subActivity)
 }
 
