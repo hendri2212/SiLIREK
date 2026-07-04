@@ -10,10 +10,15 @@ import (
 )
 
 func SeedActivities(db *gorm.DB) error {
-	// Ambil Program yang akan menjadi parent dari kegiatan ini
-	var program models.Program
-	if err := db.Where("code = ?", "7.01.01").First(&program).Error; err != nil {
+	var program1 models.Program
+	if err := db.Where("code = ?", "7.01.01").First(&program1).Error; err != nil {
 		log.Println("Gagal menemukan Program '7.01.01'. Pastikan seeder program dijalankan lebih dulu.")
+		return err
+	}
+
+	var program2 models.Program
+	if err := db.Where("code = ?", "7.01.02").First(&program2).Error; err != nil {
+		log.Println("Gagal menemukan Program '7.01.02'. Pastikan seeder program dijalankan lebih dulu.")
 		return err
 	}
 
@@ -21,7 +26,14 @@ func SeedActivities(db *gorm.DB) error {
 		{
 			Code:      "7.01.01.2.01",
 			Name:      "Perencanaan, Penganggaran, dan Evaluasi Kinerja Perangkat Daerah",
-			ProgramID: program.ID,
+			ProgramID: program1.ID,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		},
+		{
+			Code:      "7.01.02.2.01",
+			Name:      "Koordinasi Penyelenggaraan Kegiatan Pemerintahan di Tingkat Kecamatan",
+			ProgramID: program2.ID,
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		},

@@ -29,10 +29,10 @@
                         
                         <!-- Details -->
                         <div class="col-12 col-md-5 mb-3 mb-md-0">
-                            <h6 class="mb-1 fw-bold text-dark text-truncate" :title="prog.name">{{ prog.name }}</h6>
+                            <h6 class="mb-1 fw-bold text-dark">{{ prog.name }}</h6>
                             <div class="text-muted small d-flex align-items-center">
                                 <i class="bi bi-building me-2"></i> 
-                                <span class="text-truncate" :title="prog.organization ? prog.organization.name : ''">
+                                <span>
                                     {{ prog.organization ? prog.organization.name : 'Tidak ada organisasi' }}
                                 </span>
                             </div>
