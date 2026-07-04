@@ -8,7 +8,7 @@
                 <p class="text-muted mb-0">Manajemen seluruh kegiatan yang terdaftar dalam sistem.</p>
             </div>
             <router-link v-if="isAdminOrSuper" class="btn btn-info text-white rounded-pill px-4 py-2 shadow-sm fw-medium d-flex align-items-center gap-2 hover-lift" :to="{ name: 'activities.create' }">
-                <i class="bi bi-plus-circle fs-5"></i>
+                <i class="bi bi-plus-lg fs-5"></i>
                 <span>Tambah Kegiatan Baru</span>
             </router-link>
         </div>

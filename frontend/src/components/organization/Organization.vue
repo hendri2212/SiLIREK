@@ -8,7 +8,7 @@
                 </h3>
                 <p class="text-muted mb-0">Kelola data induk organisasi dalam sistem.</p>
             </div>
-            <router-link :to="{ name: 'organization.create' }" class="btn btn-success text-white rounded-pill px-4 py-2 shadow-sm fw-medium d-flex align-items-center gap-2 flex-shrink-0">
+            <router-link :to="{ name: 'organization.create' }" class="btn btn-info text-white rounded-pill px-4 py-2 shadow-sm fw-medium d-flex align-items-center gap-2 flex-shrink-0 hover-lift">
                 <i class="bi bi-plus-lg"></i>
                 <span class="d-none d-md-inline">Tambah Organisasi</span>
             </router-link>

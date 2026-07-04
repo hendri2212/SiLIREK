@@ -17,9 +17,9 @@
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Pengguna</router-link>
             <div v-if="$route.name != 'login'" class="dropdown">
                 <a class="btn p-0" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img v-if="auth.user?.photo" :src="`${baseApiUrl}/uploads/photos/${auth.user.photo}`" alt="Profile"
-                        class="rounded-circle" width="32" height="32" />
-                    <i v-else class="bi bi-person-circle fs-1"></i>
+                    <img v-if="auth.user?.photo" :src="getPhotoUrl(auth.user.photo)" alt="Profile"
+                        class="rounded-circle object-fit-cover border border-2 border-white soft-shadow" width="36" height="36" style="cursor: pointer;" />
+                    <i v-else class="bi bi-person-circle fs-2 text-success opacity-75"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end p-2">
                     <li>
@@ -48,9 +48,15 @@ import { useAuthStore } from '@/stores/auth'
 //     ? import.meta.env.VITE_API_URL_DEV
 //     : import.meta.env.VITE_API_URL_PROD
 
-const baseApiUrl = import.meta.env.MODE === 'development'
-    ? import.meta.env.VITE_API_URL_DEV.replace(/\/api$/, '')
-    : import.meta.env.VITE_API_URL_PROD.replace(/\/api$/, '')
+import api from '@/plugins/axios'
+
+const getPhotoUrl = (photo) => {
+    if (!photo) return '';
+    if (photo.startsWith('http')) return photo;
+    const baseApiUrl = api.defaults.baseURL.replace(/\/api$/, '');
+    const path = photo.startsWith('uploads/') ? photo : `uploads/photos/${photo}`;
+    return `${baseApiUrl}/${path}`;
+}
 
 const router = useRouter()
 const auth = useAuthStore()

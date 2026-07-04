@@ -8,7 +8,7 @@
                 </h3>
                 <p class="text-muted mb-0">Kelola seluruh akun pengguna yang terdaftar dalam sistem.</p>
             </div>
-            <router-link :to="{ name: 'users.create' }" class="btn btn-success text-white rounded-pill px-4 py-2 shadow-sm fw-medium d-flex align-items-center gap-2 flex-shrink-0">
+            <router-link :to="{ name: 'users.create' }" class="btn btn-info text-white rounded-pill px-4 py-2 shadow-sm fw-medium d-flex align-items-center gap-2 flex-shrink-0 hover-lift">
                 <i class="bi bi-person-fill-add"></i>
                 <span class="d-none d-md-inline">Tambah Pengguna</span>
             </router-link>

@@ -101,6 +101,14 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore()
 
+const getPhotoUrl = (photo) => {
+    if (!photo) return '';
+    if (photo.startsWith('http')) return photo;
+    const baseApiUrl = api.defaults.baseURL.replace(/\/api$/, '');
+    const path = photo.startsWith('uploads/') ? photo : `uploads/photos/${photo}`;
+    return `${baseApiUrl}/${path}`;
+};
+
 const isSaving = ref(false);
 const imagePreview = ref(null);
 
@@ -118,15 +126,8 @@ const getUser = async () => {
         Object.assign(user, response.data);
         user.password = '';
         
-        // If backend returns a photo path, we could set imagePreview here
-        // Assuming response.data.photo contains the URL path like '/uploads/abc.jpg'
         if (response.data.photo) {
-            // Check if it's already a full URL or a local path
-            if (response.data.photo.startsWith('http')) {
-                imagePreview.value = response.data.photo;
-            } else {
-                imagePreview.value = import.meta.env.VITE_API_URL.replace('/api', '') + '/' + response.data.photo.replace(/^\//, '');
-            }
+            imagePreview.value = getPhotoUrl(response.data.photo);
         }
     } catch (error) {
         console.error('Error fetching user data:', error);

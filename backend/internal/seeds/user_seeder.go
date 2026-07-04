@@ -27,6 +27,9 @@ func SeedUsers(db *gorm.DB) error {
 		log.Println("Peringatan: Organisasi tidak ditemukan, admin dan user akan diset tanpa organisasi.")
 	}
 
+	photoSuperAdmin := "uploads/photos/20250512085110_199108022024211014.jpeg"
+	photoAdmin := "uploads/photos/20250515114056_access bars.jpg"
+
 	users := []models.User{
 		{
 			FullName:       "Super Admin",
@@ -35,6 +38,7 @@ func SeedUsers(db *gorm.DB) error {
 			Nip:            nil,
 			OrganizationID: nil, // Superadmin bebas dari organisasi
 			Role:           models.UserRoleSuperadmin,
+			Photo:          &photoSuperAdmin,
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		},
@@ -45,6 +49,7 @@ func SeedUsers(db *gorm.DB) error {
 			Nip:            nil,
 			OrganizationID: orgID,
 			Role:           models.UserRoleAdmin,
+			Photo:          &photoAdmin,
 			CreatedAt:      time.Now(),
 			UpdatedAt:      time.Now(),
 		},

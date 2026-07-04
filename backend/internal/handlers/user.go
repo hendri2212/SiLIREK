@@ -1,14 +1,20 @@
 package handlers
 
 import (
+	"image"
+	"image/jpeg"
+	"image/png"
 	"net/http"
 	"os"
+	"path/filepath"
 	"silirek/internal/models"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/nfnt/resize"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -166,12 +172,47 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 			}
 		}
 		photoFile := files[0]
-		filename := time.Now().Format("20060102150405") + "_" + photoFile.Filename
-		savePath := "uploads/photos/" + filename
-		if err := c.SaveUploadedFile(photoFile, savePath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save photo"})
+		
+		file, err := photoFile.Open()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to open photo file"})
 			return
 		}
+		defer file.Close()
+
+		// Decode the image
+		img, _, err := image.Decode(file)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid image format"})
+			return
+		}
+
+		// Resize to maximum width 500px, preserving aspect ratio
+		m := resize.Resize(500, 0, img, resize.Lanczos3)
+
+		filename := time.Now().Format("20060102150405") + "_" + photoFile.Filename
+		savePath := "uploads/photos/" + filename
+		
+		out, err := os.Create(savePath)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create photo file"})
+			return
+		}
+		defer out.Close()
+
+		ext := strings.ToLower(filepath.Ext(photoFile.Filename))
+		if ext == ".png" {
+			err = png.Encode(out, m)
+		} else {
+			// default to jpeg with quality 80
+			err = jpeg.Encode(out, m, &jpeg.Options{Quality: 80})
+		}
+		
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to encode and save image"})
+			return
+		}
+		
 		user.Photo = &filename
 	}
 
