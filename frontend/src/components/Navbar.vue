@@ -5,14 +5,14 @@
         </a>
 
         <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto align-items-center">
+            <router-link v-if="isAdminOrSuper" :to="{ name: 'program.list' }"
+                class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Program</router-link>
             <router-link :to="{ name: 'activities.list' }"
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Kegiatan</router-link>
             <router-link v-if="isAdminOrSuper" :to="{ name: 'reports.kegiatan' }"
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Laporan</router-link>
             <router-link v-if="isSuperadmin" :to="{ name: 'organization.list' }"
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Organisasi</router-link>
-            <router-link v-if="isAdminOrSuper" :to="{ name: 'program.list' }"
-                class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Program</router-link>
             <router-link v-if="isSuperadmin" :to="{ name: 'users.list' }"
                 class="fw-bold me-3 py-2 link-body-emphasis text-decoration-none">Pengguna</router-link>
             <div v-if="$route.name != 'login'" class="dropdown">

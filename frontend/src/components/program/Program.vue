@@ -1,43 +1,66 @@
 <template>
-    <div class="card shadow-sm rounded-4 border-0">
-        <div class="card-body">
-            <div class="mb-4 d-flex align-items-center justify-content-between">
-                <h4 class="card-title text-info">Management Program</h4>
-                <router-link :to="{ name: 'program.create' }" class="btn btn-info text-white">
-                    <i class="bi bi-plus-lg me-1"></i> Tambah Program
-                </router-link>
+    <div class="mb-5">
+        <!-- Header Section -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+            <div>
+                <h3 class="fw-bold text-dark mb-1">Manajemen Program</h3>
+                <p class="text-muted small mb-0">Kelola daftar program beserta organisasinya</p>
+            </div>
+            <router-link :to="{ name: 'program.create' }" class="btn btn-info text-white rounded-pill px-4 shadow-sm hover-lift d-flex align-items-center gap-2">
+                <i class="bi bi-plus-lg fs-5"></i>
+                <span class="fw-bold">Tambah Program</span>
+            </router-link>
+        </div>
+        
+        <!-- Cards List -->
+        <div class="d-flex flex-column gap-3">
+            <div v-for="prog in programs" :key="prog.id" class="card border-0 shadow-sm rounded-4 hover-card overflow-hidden">
+                <div class="card-body p-0">
+                    <div class="row g-0 align-items-center p-3 p-md-4">
+                        <!-- Icon & Code -->
+                        <div class="col-12 col-md-3 mb-3 mb-md-0 d-flex align-items-center gap-3">
+                            <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px;">
+                                <i class="bi bi-folder2-open fs-4"></i>
+                            </div>
+                            <div>
+                                <span class="badge bg-light text-dark border px-2 py-1">{{ prog.code }}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Details -->
+                        <div class="col-12 col-md-5 mb-3 mb-md-0">
+                            <h6 class="mb-1 fw-bold text-dark text-truncate" :title="prog.name">{{ prog.name }}</h6>
+                            <div class="text-muted small d-flex align-items-center">
+                                <i class="bi bi-building me-2"></i> 
+                                <span class="text-truncate" :title="prog.organization ? prog.organization.name : ''">
+                                    {{ prog.organization ? prog.organization.name : 'Tidak ada organisasi' }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="col-12 col-md-4 text-md-end">
+                            <div class="d-flex justify-content-md-end gap-2">
+                                <router-link :to="{ name: 'program.edit', params: { id: prog.id } }" class="btn btn-light btn-sm text-warning rounded-pill px-3 hover-lift fw-medium">
+                                    <i class="bi bi-pencil-fill me-1"></i> Edit
+                                </router-link>
+                                <button @click="deleteProgram(prog.id)" class="btn btn-light btn-sm text-danger rounded-pill px-3 hover-lift fw-medium">
+                                    <i class="bi bi-trash-fill me-1"></i> Hapus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div class="table-responsive">
-                <table class="table">
-                    <thead class="text-nowrap">
-                        <tr>
-                            <th scope="col">Kode Program</th>
-                            <th scope="col">Nama Program</th>
-                            <th scope="col">Organisasi</th>
-                            <th class="text-center" scope="col">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-nowrap">
-                        <tr v-for="prog in programs" :key="prog.id">
-                            <td>{{ prog.code }}</td>
-                            <td>{{ prog.name }}</td>
-                            <td>{{ prog.organization ? prog.organization.name : '-' }}</td>
-                            <td class="text-center">
-                                <router-link :to="{ name: 'program.edit', params: { id: prog.id } }"
-                                    class="btn btn-warning btn-sm me-2">
-                                    <i class="bi bi-pencil-fill"></i> Edit
-                                </router-link>
-                                <button class="btn btn-danger btn-sm" @click="deleteProgram(prog.id)">
-                                    <i class="bi bi-trash-fill"></i> Hapus
-                                </button>
-                            </td>
-                        </tr>
-                        <tr v-if="programs.length === 0">
-                            <td colspan="4" class="text-center text-muted">Belum ada data program</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Empty State -->
+            <div v-if="programs.length === 0" class="text-center py-5 bg-white rounded-4 shadow-sm">
+                <i class="bi bi-inbox text-muted" style="font-size: 4rem; opacity: 0.5;"></i>
+                <h5 class="text-muted fw-bold mt-3">Belum Ada Program</h5>
+                <p class="text-muted small mb-4">Tambahkan program baru untuk memulai pengelolaan data.</p>
+                <router-link :to="{ name: 'program.create' }" class="btn btn-info text-white rounded-pill px-4 hover-lift">
+                    <i class="bi bi-plus-lg me-1"></i> Tambah Program Sekarang
+                </router-link>
             </div>
         </div>
     </div>
@@ -76,3 +99,22 @@ onMounted(() => {
     fetchPrograms()
 })
 </script>
+
+<style scoped>
+.hover-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08) !important;
+}
+
+.hover-lift {
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-2px);
+}
+</style>

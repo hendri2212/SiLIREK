@@ -26,6 +26,13 @@ func SeedPrograms(db *gorm.DB) error {
 			UpdatedAt:      time.Now(),
 		},
 		{
+			Code:           "7.01.02",
+			Name:           "PROGRAM PENYELENGGARAAN PEMERINTAHAN DAN PELAYANAN PUBLIK",
+			OrganizationID: org.ID,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
+		},
+		{
 			Code:           "7.01.03",
 			Name:           "PROGRAM PEMBERDAYAAN MASYARAKAT DESA DAN KELURAHAN",
 			OrganizationID: org.ID,

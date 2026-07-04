@@ -1,6 +1,6 @@
 <template>
     <div class="row justify-content-center form-container">
-        <div class="col-md-8 col-lg-6">
+        <div class="col-md-10 col-lg-8">
             <div class="card shadow-lg rounded-4 border-0 overflow-hidden">
                 <!-- Decorative top border -->
                 <div class="bg-info" style="height: 6px;"></div>

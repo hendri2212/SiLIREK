@@ -1,6 +1,6 @@
 <template>
     <div class="row justify-content-center form-container">
-        <div class="col-md-8 col-lg-6">
+        <div class="col-md-10 col-lg-8">
             <div class="card shadow-lg rounded-4 border-0 overflow-hidden">
                 <div class="bg-warning" style="height: 6px;"></div>
                 
@@ -35,8 +35,9 @@
                         </div>
 
                         <div class="form-floating mb-5">
-                            <input type="number" class="form-control custom-input" id="budget" v-model.number="account.budget_ceiling"
-                                placeholder="Pagu Anggaran" required min="0">
+                            <input type="text" inputmode="numeric" class="form-control custom-input" id="budget" v-model="formattedPagu"
+                                @focus="isPaguFocused = true" @blur="isPaguFocused = false"
+                                placeholder="Pagu Anggaran" required>
                             <label for="budget" class="text-muted"><i class="bi bi-currency-dollar me-1"></i> Pagu Anggaran (Rp)</label>
                         </div>
                         
@@ -58,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeMount } from 'vue'
+import { ref, reactive, computed, onBeforeMount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import api from '@/plugins/axios'
 
@@ -72,6 +73,19 @@ const account = reactive({
     description: '',
     budget_ceiling: 0,
     sub_activity_id: Number(route.params.subActivityId)
+})
+
+const isPaguFocused = ref(false)
+const formattedPagu = computed({
+    get() {
+        if (isPaguFocused.value) return account.budget_ceiling || '';
+        if (!account.budget_ceiling) return '';
+        return new Intl.NumberFormat('id-ID').format(account.budget_ceiling);
+    },
+    set(val) {
+        const parsed = parseInt(String(val).replace(/\D/g, ''), 10);
+        account.budget_ceiling = isNaN(parsed) ? 0 : parsed;
+    }
 })
 
 const fetchAccount = async () => {

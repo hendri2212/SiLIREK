@@ -1,6 +1,6 @@
 <template>
     <div class="row justify-content-center form-container">
-        <div class="col-md-8 col-lg-6">
+        <div class="col-md-10 col-lg-8">
             <div class="card shadow-lg rounded-4 border-0 overflow-hidden">
                 <div class="bg-warning" style="height: 6px;"></div>
                 
@@ -41,8 +41,9 @@
                         </div>
 
                         <div class="form-floating mb-5">
-                            <input type="number" class="form-control custom-input" id="credit" v-model.number="item.credit"
-                                placeholder="Nominal Kredit (Rp)" required min="0">
+                            <input type="text" inputmode="numeric" class="form-control custom-input" id="credit" v-model="formattedCredit"
+                                @focus="isCreditFocused = true" @blur="isCreditFocused = false"
+                                placeholder="Nominal Kredit (Rp)" required>
                             <label for="credit" class="text-muted"><i class="bi bi-cash-coin me-1"></i> Nominal Kredit (Rp)</label>
                         </div>
                         
@@ -64,7 +65,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeMount } from 'vue'
+import { ref, reactive, computed, onBeforeMount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import api from '@/plugins/axios'
 
@@ -79,6 +80,19 @@ const item = reactive({
     description: '',
     credit: 0,
     expenditure_account_id: Number(route.params.accountId)
+})
+
+const isCreditFocused = ref(false)
+const formattedCredit = computed({
+    get() {
+        if (isCreditFocused.value) return item.credit || '';
+        if (!item.credit) return '';
+        return new Intl.NumberFormat('id-ID').format(item.credit);
+    },
+    set(val) {
+        const parsed = parseInt(String(val).replace(/\D/g, ''), 10);
+        item.credit = isNaN(parsed) ? 0 : parsed;
+    }
 })
 
 const fetchItem = async () => {
