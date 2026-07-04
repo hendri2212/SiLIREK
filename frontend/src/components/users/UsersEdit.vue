@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { reactive, onBeforeMount, ref } from 'vue';
+import { reactive, onMounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import api from '@/plugins/axios';
 
@@ -112,10 +112,9 @@ const updateUser = async () => {
     }
 };
 
-onBeforeMount(() => {
-    getUser();
-    fetchPositions();
-    fetchLeaders();
+onMounted(() => {
+    // Jalankan secara paralel untuk performa terbaik
+    Promise.all([getUser(), fetchPositions(), fetchLeaders()]);
 });
 </script>
 

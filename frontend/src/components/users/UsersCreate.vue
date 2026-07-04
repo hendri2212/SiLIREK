@@ -71,7 +71,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeMount } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/plugins/axios';
 
@@ -106,9 +106,9 @@ const fetchLeaders = async () => {
     }
 };
 
-onBeforeMount(() => {
-    fetchPositions();
-    fetchLeaders();
+onMounted(() => {
+    // Jalankan secara paralel untuk performa terbaik
+    Promise.all([fetchPositions(), fetchLeaders()]);
 });
 
 const createUser = async () => {

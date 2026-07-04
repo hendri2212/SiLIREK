@@ -1,6 +1,11 @@
 <template>
     <div class="mb-5">
-        <h5 class="fw-bold mb-4">Laporan Pohon Kegiatan</h5>
+        <div class="mb-5">
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="bi bi-diagram-3 me-2 text-success opacity-75"></i>Laporan Pohon Kegiatan
+            </h3>
+            <p class="text-muted mb-0">Ringkasan seluruh kegiatan, sub kegiatan, dan rekening belanja.</p>
+        </div>
 
         <div v-if="isLoading" class="text-center my-5">
             <div class="spinner-border text-primary" role="status">

@@ -153,7 +153,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/plugins/axios'
@@ -229,9 +229,9 @@ const deleteItem = async (id) => {
     }
 }
 
-onBeforeMount(async () => {
-    await fetchParentAccount()
-    await fetchItems()
+onMounted(async () => {
+    // Jalankan secara paralel untuk performa terbaik
+    await Promise.all([fetchParentAccount(), fetchItems()])
 })
 </script>
 

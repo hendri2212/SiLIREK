@@ -3,45 +3,33 @@
         <header>
             <Navbar v-if="$route.name != 'login'" />
         </header>
-
         <RouterView />
     </div>
 </template>
-<script>
-import { onBeforeMount } from 'vue';
-import { useRouter } from 'vue-router';
+
+<script setup>
+import { watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import Navbar from './components/Navbar.vue';
 import { useAuthStore } from '@/stores/auth'
+import { isTokenValid } from '@/utils/cek_token'
 
-export default {
-    name: 'App',
-    components: {
-        Navbar
-    },
-    setup() {
-        const router = useRouter();
-        const auth = useAuthStore();
+const router = useRouter();
+const route = useRoute();
+const auth = useAuthStore();
 
-        const isTokenExpired = (token) => {
-            try {
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                const exp = payload.exp;
-                if (!exp) return true;
-                return Date.now() >= exp * 1000;
-            } catch (e) {
-                return true;
-            }
-        };
-
-        onBeforeMount(() => {
-            const token = auth.token;
-            if (!token || isTokenExpired(token)) {
+// Pantau setiap perubahan route, cek token saat itu juga
+// Ini lebih andal daripada onBeforeMount yang hanya berjalan sekali
+watch(
+    () => route.name,
+    (routeName) => {
+        if (routeName && routeName !== 'login') {
+            if (!isTokenValid()) {
                 auth.logout();
                 router.push({ name: 'login' });
             }
-        });
-
-        return {};
-    }
-};
+        }
+    },
+    { immediate: true }
+);
 </script>

@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onBeforeMount } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import api from '@/plugins/axios'
 
@@ -97,7 +97,7 @@ const updateSubActivity = async () => {
     }
 }
 
-onBeforeMount(() => {
+onMounted(() => {
     fetchSubActivity()
 })
 </script>

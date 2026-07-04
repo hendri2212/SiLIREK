@@ -114,7 +114,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/plugins/axios'
@@ -169,9 +169,9 @@ const goToItems = (accountId) => {
     router.push({ name: 'items.list', params: { activityId: route.params.activityId, subActivityId: route.params.subActivityId, accountId: accountId } })
 }
 
-onBeforeMount(async () => {
-    await fetchParentSubActivity()
-    await fetchAccounts()
+onMounted(async () => {
+    // Jalankan secara paralel untuk performa terbaik
+    await Promise.all([fetchParentSubActivity(), fetchAccounts()])
 })
 </script>
 

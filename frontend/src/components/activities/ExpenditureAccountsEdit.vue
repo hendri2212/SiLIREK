@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onBeforeMount } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import api from '@/plugins/axios'
 
@@ -119,7 +119,7 @@ const updateAccount = async () => {
     }
 }
 
-onBeforeMount(() => {
+onMounted(() => {
     fetchAccount()
 })
 </script>

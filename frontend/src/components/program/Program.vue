@@ -3,7 +3,9 @@
         <!-- Header Section -->
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
             <div>
-                <h3 class="fw-bold text-dark mb-1">Manajemen Program</h3>
+                <h3 class="fw-bold text-dark mb-1">
+                    <i class="bi bi-collection me-2 text-success opacity-75"></i>Manajemen Program
+                </h3>
                 <p class="text-muted small mb-0">Kelola daftar program beserta organisasinya</p>
             </div>
             <router-link :to="{ name: 'program.create' }" class="btn btn-info text-white rounded-pill px-4 shadow-sm hover-lift d-flex align-items-center gap-2">

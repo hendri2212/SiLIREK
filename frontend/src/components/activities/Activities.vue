@@ -2,7 +2,9 @@
     <div class="activities-container pb-5">
         <div class="mb-5 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
             <div>
-                <h3 class="fw-bold text-dark mb-1">Daftar Kegiatan</h3>
+                <h3 class="fw-bold text-dark mb-1">
+                    <i class="bi bi-journal-text me-2 text-success opacity-75"></i>Daftar Kegiatan
+                </h3>
                 <p class="text-muted mb-0">Manajemen seluruh kegiatan yang terdaftar dalam sistem.</p>
             </div>
             <router-link v-if="isAdminOrSuper" class="btn btn-info text-white rounded-pill px-4 py-2 shadow-sm fw-medium d-flex align-items-center gap-2 hover-lift" :to="{ name: 'activities.create' }">
@@ -71,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/plugins/axios'
@@ -111,7 +113,7 @@ const goToSubActivities = (id) => {
     router.push({ name: 'subactivities.list', params: { activityId: id } })
 }
 
-onBeforeMount(() => {
+onMounted(() => {
     fetchActivities()
 })
 </script>

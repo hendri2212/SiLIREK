@@ -88,7 +88,7 @@
 </template>
 
 <script setup>
-import { ref, onBeforeMount, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import api from '@/plugins/axios'
@@ -139,9 +139,9 @@ const goToExpenditureAccounts = (subId) => {
     router.push({ name: 'expenditureaccounts.list', params: { activityId: route.params.activityId, subActivityId: subId } })
 }
 
-onBeforeMount(async () => {
-    await fetchParentActivity()
-    await fetchSubActivities()
+onMounted(async () => {
+    // Jalankan secara paralel untuk performa terbaik
+    await Promise.all([fetchParentActivity(), fetchSubActivities()])
 })
 </script>
 
