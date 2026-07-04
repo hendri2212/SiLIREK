@@ -22,6 +22,15 @@ func (h *ActivityHandler) GetActivities(c *gin.Context) {
 
 	c.JSON(http.StatusOK, activity)
 }
+
+func (h *ActivityHandler) GetActivitiesTree(c *gin.Context) {
+	var activities []models.Activity
+	h.db.Preload("SubActivities").
+		Preload("SubActivities.ExpenditureAccounts").
+		Find(&activities)
+
+	c.JSON(http.StatusOK, activities)
+}
 func (h *ActivityHandler) CreateActivity(c *gin.Context) {
 	var activity models.Activity
 	if err := c.ShouldBindJSON(&activity); err != nil {

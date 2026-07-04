@@ -132,6 +132,11 @@ const router = createRouter({
                     name: 'reports.kegiatan',
                     component: () => import('../components/reports/ReportsKegiatan.vue'),
                 },
+                {
+                    path: 'rekening/:id',
+                    name: 'reports.rekening',
+                    component: () => import('../components/reports/ReportsRekening.vue'),
+                },
             ]
         },
         {

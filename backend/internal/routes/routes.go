@@ -61,6 +61,8 @@ func SetupRoutes(router *gin.Engine, db *gorm.DB) {
 		api.PUT("/users/:id", userHandler.UpdateUser)
 		api.DELETE("/users/:id", userHandler.DeleteUser)
 
+		api.GET("/reports/activities-tree", activitiesHandler.GetActivitiesTree)
+
 
 		api.GET("/activity", activitiesHandler.GetActivities)
 		api.POST("/activity", activitiesHandler.CreateActivity)
