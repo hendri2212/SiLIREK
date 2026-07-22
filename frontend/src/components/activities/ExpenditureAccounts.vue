@@ -144,7 +144,7 @@ const fetchParentSubActivity = async () => {
 const fetchAccounts = async () => {
     try {
         const response = await api.get(`/expenditure-account?sub_activity_id=${route.params.subActivityId}`)
-        accounts.value = response.data
+        accounts.value = response.data || []
     } catch (error) {
         console.error('Error fetching expenditure accounts:', error)
     } finally {

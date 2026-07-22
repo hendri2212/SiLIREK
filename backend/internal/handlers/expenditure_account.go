@@ -36,7 +36,7 @@ func (h *ExpenditureAccountHandler) GetExpenditureAccounts(c *gin.Context) {
 		return
 	}
 
-	var responses []ExpenditureAccountResponse
+	responses := []ExpenditureAccountResponse{}
 	for _, account := range accounts {
 		var totalCredit float64
 		h.db.Model(&models.Item{}).Where("expenditure_account_id = ?", account.ID).Select("COALESCE(SUM(credit), 0)").Scan(&totalCredit)

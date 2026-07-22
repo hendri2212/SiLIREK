@@ -5,7 +5,7 @@ import (
 	"os"
 	"silirek/internal/models"
 	"silirek/internal/routes"
-	"silirek/internal/seeds"
+	// "silirek/internal/seeds"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -32,8 +32,9 @@ func main() {
 
 	db := InitDB()
 
-	// HATI-HATI: Hanya gunakan ini untuk development saat merombak database!
-	// Ini akan menghapus semua tabel dan membuatnya ulang dari awal.
+	// CATATAN: DropTable & SeedAll dikomentari agar data tersimpan aman dan tidak terhapus saat server di-restart.
+	// Jika ingin mereset total database, silakan aktifkan kembali baris di bawah ini.
+	/*
 	db.Migrator().DropTable(
 		&models.Item{},
 		&models.ExpenditureAccount{},
@@ -43,8 +44,9 @@ func main() {
 		&models.User{},
 		&models.Organization{},
 	)
+	*/
 
-	// Auto migrate semua tabel
+	// Auto migrate semua tabel (aman, tidak menghapus data)
 	db.AutoMigrate(
 		&models.Organization{},
 		&models.User{},
@@ -55,8 +57,8 @@ func main() {
 		&models.Item{},
 	)
 
-	// Seed data
-	seeds.SeedAll(db)
+	// Seed data (dikomentari agar tidak menimpa / menambahkan data duplikat setiap restart)
+	// seeds.SeedAll(db)
 
 	router := gin.Default()
 	routes.SetupRoutes(router, db)

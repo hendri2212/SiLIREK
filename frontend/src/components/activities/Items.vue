@@ -208,7 +208,7 @@ const fetchParentAccount = async () => {
 const fetchItems = async () => {
     try {
         const response = await api.get(`/item?expenditure_account_id=${route.params.accountId}`)
-        items.value = response.data
+        items.value = response.data || []
     } catch (error) {
         console.error('Error fetching items:', error)
     } finally {
