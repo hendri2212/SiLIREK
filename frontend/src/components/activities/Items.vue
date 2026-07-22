@@ -78,7 +78,7 @@
                     
                     <div class="d-flex flex-column flex-md-row gap-4">
                         <div class="text-md-end">
-                            <p class="text-muted mb-1 small fw-medium">Total Kredit</p>
+                            <p class="text-muted mb-1 small fw-medium">Total Realisasi</p>
                             <h5 class="fw-bold text-danger mb-0">{{ formatCurrency(totalCredit) }}</h5>
                         </div>
                         <div class="divider-vertical d-none d-md-block"></div>

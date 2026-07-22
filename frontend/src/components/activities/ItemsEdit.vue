@@ -43,8 +43,8 @@
                         <div class="form-floating mb-5">
                             <input type="text" inputmode="numeric" class="form-control custom-input" id="credit" v-model="formattedCredit"
                                 @focus="isCreditFocused = true" @blur="isCreditFocused = false"
-                                placeholder="Nominal Kredit (Rp)" required>
-                            <label for="credit" class="text-muted"><i class="bi bi-cash-coin me-1"></i> Nominal Kredit (Rp)</label>
+                                placeholder="Nominal Realisasi (Rp)" required>
+                            <label for="credit" class="text-muted"><i class="bi bi-cash-coin me-1"></i> Nominal Realisasi (Rp)</label>
                         </div>
                         
                         <div class="d-flex justify-content-end gap-3 mt-4 pt-3 border-top">

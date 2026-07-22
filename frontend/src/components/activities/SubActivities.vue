@@ -60,10 +60,21 @@
                             </div>
                         </div>
                         
-                        <h5 class="card-title fw-bold text-dark mb-4 flex-grow-1" style="line-height: 1.5; font-size: 1.15rem;">
+                        <h5 class="card-title fw-bold text-dark flex-grow-1" style="line-height: 1.5; font-size: 1.15rem;">
                             {{ data.name }}
                         </h5>
                         
+                        <div class="d-flex flex-column gap-2 mt-3 mb-4 p-3 bg-light rounded-3 border">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="text-muted small fw-medium"><i class="bi bi-cash-stack me-1"></i>Total Pagu</div>
+                                <div class="fw-bold text-success fs-6">{{ formatCurrency(data.total_budget || 0) }}</div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="text-muted small fw-medium"><i class="bi bi-wallet2 me-1"></i>Sisa Pagu</div>
+                                <div class="fw-bold fs-6" :class="(data.remaining_budget >= 0 || data.remaining_budget == null) ? 'text-primary' : 'text-danger'">{{ formatCurrency(data.remaining_budget !== undefined ? data.remaining_budget : data.total_budget || 0) }}</div>
+                            </div>
+                        </div>
+
                         <div class="divider mb-3"></div>
                         
                         <div v-if="isAdminOrSuper" class="d-flex gap-2 justify-content-end mt-auto">
@@ -101,6 +112,10 @@ const isAdminOrSuper = computed(() => authStore.user?.role === 'superadmin' || a
 const isLoading = ref(true)
 const subActivities = ref([])
 const parentActivity = ref(null)
+
+const formatCurrency = (value) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
+}
 
 const fetchParentActivity = async () => {
     try {

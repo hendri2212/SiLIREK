@@ -63,21 +63,21 @@
                             <span class="badge bg-info-subtle text-info px-2 py-1 rounded border border-info-subtle mb-1 d-inline-block">
                                 <i class="bi bi-hash me-1"></i> {{ data.code }}
                             </span>
-                            <h6 class="fw-bold text-dark mb-0 text-truncate" :title="data.description">
+                            <h6 class="fw-bold text-dark mb-0 text-line-clamp-2" :title="data.description">
                                 {{ data.description }}
                             </h6>
                         </div>
                     </div>
 
                     <!-- Middle: Budget Info -->
-                    <div class="d-flex flex-column flex-md-row gap-3 gap-md-4 col-lg-5 justify-content-lg-center bg-light p-2 rounded-3">
+                    <div class="d-flex flex-column flex-md-row gap-3 gap-md-4 col-lg-5 justify-content-lg-center bg-light p-2 rounded-3 text-nowrap">
                         <div class="text-md-end flex-grow-1">
                             <div class="text-muted small fw-medium">Pagu Anggaran</div>
                             <div class="fw-bold text-success">{{ formatCurrency(data.budget_ceiling) }}</div>
                         </div>
                         <div class="divider-vertical d-none d-md-block"></div>
                         <div class="text-md-end flex-grow-1">
-                            <div class="text-muted small fw-medium">Total Kredit</div>
+                            <div class="text-muted small fw-medium">Total Realisasi</div>
                             <div class="fw-bold text-danger">{{ formatCurrency(data.total_credit || 0) }}</div>
                         </div>
                         <div class="divider-vertical d-none d-md-block"></div>
@@ -90,7 +90,7 @@
                     </div>
 
                     <!-- Right: Actions -->
-                    <div class="col-lg-2 d-flex justify-content-lg-end align-items-center border-top border-lg-top-0 pt-3 pt-lg-0 mt-2 mt-lg-0">
+                    <div class="col-lg-auto d-flex justify-content-lg-end align-items-center pt-3 pt-lg-0 mt-2 mt-lg-0">
                         <div v-if="isAdminOrSuper" class="d-flex gap-2 w-100 justify-content-end">
                             <router-link :to="{ name: 'expenditureaccounts.edit', params: { activityId: route.params.activityId, subActivityId: route.params.subActivityId, accountId: data.id } }"
                                 @click.stop
@@ -198,6 +198,14 @@ onMounted(async () => {
 
 .min-w-0 {
     min-width: 0;
+}
+
+.text-line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: normal;
 }
 
 .btn-action {

@@ -16,6 +16,12 @@ func SubActivitiesHandler(db *gorm.DB) *SubActivityHandler {
 	return &SubActivityHandler{db: db}
 }
 
+type SubActivityResponse struct {
+	models.SubActivity
+	TotalBudget     float64 `json:"total_budget"`
+	RemainingBudget float64 `json:"remaining_budget"`
+}
+
 func (h *SubActivityHandler) GetSubActivities(c *gin.Context) {
 	var subActivities []models.SubActivity
 	query := h.db
@@ -30,7 +36,30 @@ func (h *SubActivityHandler) GetSubActivities(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, subActivities)
+
+	responses := []SubActivityResponse{}
+	for _, sa := range subActivities {
+		var totalBudget float64
+		h.db.Model(&models.ExpenditureAccount{}).
+			Where("sub_activity_id = ?", sa.ID).
+			Select("COALESCE(SUM(budget_ceiling), 0)").
+			Scan(&totalBudget)
+
+		var totalCredit float64
+		h.db.Model(&models.Item{}).
+			Joins("JOIN expenditure_accounts ON expenditure_accounts.id = items.expenditure_account_id").
+			Where("expenditure_accounts.sub_activity_id = ?", sa.ID).
+			Select("COALESCE(SUM(items.credit), 0)").
+			Scan(&totalCredit)
+
+		responses = append(responses, SubActivityResponse{
+			SubActivity:     sa,
+			TotalBudget:     totalBudget,
+			RemainingBudget: totalBudget - totalCredit,
+		})
+	}
+
+	c.JSON(http.StatusOK, responses)
 }
 
 func (h *SubActivityHandler) CreateSubActivity(c *gin.Context) {
