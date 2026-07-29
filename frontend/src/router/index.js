@@ -137,6 +137,11 @@ const router = createRouter({
                     name: 'reports.rekening',
                     component: () => import('../components/reports/ReportsRekening.vue'),
                 },
+                {
+                    path: 'sub-kegiatan/:subId/print',
+                    name: 'reports.sub-kegiatan.print',
+                    component: () => import('../components/reports/ReportsPrintSubKegiatan.vue'),
+                },
             ]
         },
         {

@@ -20,40 +20,69 @@
                     <button class="accordion-button fw-bold collapsed rounded" type="button" data-bs-toggle="collapse"
                         :data-bs-target="'#collapseAct' + activity.id" aria-expanded="false"
                         :aria-controls="'collapseAct' + activity.id">
-                        <i class="bi bi-folder-fill text-warning me-2"></i> 
+                        <i class="bi bi-folder-fill text-warning me-2"></i>
                         {{ activity.code }} - {{ activity.name }}
                     </button>
                 </h2>
                 <div :id="'collapseAct' + activity.id" class="accordion-collapse collapse"
                     :aria-labelledby="'headingAct' + activity.id" data-bs-parent="#accordionActivity">
                     <div class="accordion-body bg-light p-3">
-                        
+
                         <!-- Sub Activities Accordion -->
-                        <div v-if="activity.sub_activities && activity.sub_activities.length > 0" class="accordion" :id="'accordionSub' + activity.id">
-                            <div v-for="(sub, indexSub) in activity.sub_activities" :key="sub.id" class="accordion-item mb-2 border-0 shadow-sm rounded">
+                        <div v-if="activity.sub_activities && activity.sub_activities.length > 0"
+                            class="accordion" :id="'accordionSub' + activity.id">
+                            <div v-for="(sub, indexSub) in activity.sub_activities" :key="sub.id"
+                                class="accordion-item mb-2 border-0 shadow-sm rounded">
                                 <h2 class="accordion-header" :id="'headingSub' + sub.id">
-                                    <button class="accordion-button fw-bold collapsed rounded bg-white" type="button" data-bs-toggle="collapse"
-                                        :data-bs-target="'#collapseSub' + sub.id" aria-expanded="false"
-                                        :aria-controls="'collapseSub' + sub.id">
-                                        <i class="bi bi-folder2-open text-info me-2"></i>
-                                        {{ sub.code }} - {{ sub.name }}
-                                    </button>
+                                    <div class="d-flex align-items-center w-100 pe-2 sub-header-row">
+                                        <button class="accordion-button fw-bold collapsed rounded bg-white flex-grow-1"
+                                            type="button" data-bs-toggle="collapse"
+                                            :data-bs-target="'#collapseSub' + sub.id" aria-expanded="false"
+                                            :aria-controls="'collapseSub' + sub.id">
+                                            <i class="bi bi-folder2-open text-info me-2"></i>
+                                            {{ sub.code }} - {{ sub.name }}
+                                        </button>
+                                        <!-- Tombol navigasi ke halaman preview cetak -->
+                                        <router-link
+                                            :to="{
+                                                name: 'reports.sub-kegiatan.print',
+                                                params: { subId: sub.id },
+                                                query: {
+                                                    activityCode: activity.code,
+                                                    activityName: activity.name,
+                                                    subCode: sub.code,
+                                                    subName: sub.name,
+                                                }
+                                            }"
+                                            class="btn btn-sm btn-outline-secondary ms-2 flex-shrink-0 print-sub-btn"
+                                            title="Lihat & Cetak Daftar Rekening Sub Kegiatan ini"
+                                            @click.stop
+                                        >
+                                            <i class="bi bi-printer me-1"></i> Print
+                                        </router-link>
+                                    </div>
                                 </h2>
                                 <div :id="'collapseSub' + sub.id" class="accordion-collapse collapse"
-                                    :aria-labelledby="'headingSub' + sub.id" :data-bs-parent="'#accordionSub' + activity.id">
+                                    :aria-labelledby="'headingSub' + sub.id"
+                                    :data-bs-parent="'#accordionSub' + activity.id">
                                     <div class="accordion-body bg-white p-3 border-top">
-                                        
+
                                         <!-- Expenditure Accounts List -->
                                         <div v-if="sub.expenditure_accounts && sub.expenditure_accounts.length > 0">
                                             <ul class="list-group list-group-flush">
-                                                <li v-for="acc in sub.expenditure_accounts" :key="acc.id" class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                                <li v-for="acc in sub.expenditure_accounts" :key="acc.id"
+                                                    class="list-group-item d-flex justify-content-between align-items-center px-0">
                                                     <div>
                                                         <i class="bi bi-file-earmark-text text-secondary me-2"></i>
                                                         <span class="fw-medium">{{ acc.code }}</span> - {{ acc.description }}
                                                     </div>
                                                     <div>
-                                                        <span class="badge bg-success me-3">{{ acc.budget_ceiling?.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) }}</span>
-                                                        <router-link :to="{ name: 'reports.rekening', params: { id: acc.id } }" class="btn btn-sm btn-outline-primary rounded-pill px-3 hover-lift">
+                                                        <span class="badge bg-success me-3">
+                                                            {{ acc.budget_ceiling?.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }) }}
+                                                        </span>
+                                                        <router-link
+                                                            :to="{ name: 'reports.rekening', params: { id: acc.id } }"
+                                                            class="btn btn-sm btn-outline-primary rounded-pill px-3 hover-lift">
                                                             <i class="bi bi-box-arrow-up-right me-1"></i> Detail
                                                         </router-link>
                                                     </div>
@@ -63,7 +92,7 @@
                                         <div v-else class="text-muted small py-2">
                                             <i class="bi bi-info-circle me-1"></i> Belum ada Rekening Belanja
                                         </div>
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -75,7 +104,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div v-if="activities.length === 0" class="text-center text-muted py-5">
                 <i class="bi bi-folder-x fs-1"></i>
                 <p class="mt-3">Tidak ada data kegiatan.</p>
@@ -89,16 +118,16 @@ import { ref, onMounted } from 'vue'
 import api from '@/plugins/axios'
 
 const activities = ref([])
-const isLoading = ref(true)
+const isLoading  = ref(true)
 
 onMounted(async () => {
     try {
-        const response = await api.get('/reports/activities-tree');
-        activities.value = response.data;
+        const response = await api.get('/reports/activities-tree')
+        activities.value = response.data
     } catch (error) {
-        console.error('API error:', error);
+        console.error('API error:', error)
     } finally {
-        isLoading.value = false;
+        isLoading.value = false
     }
 })
 </script>
@@ -115,5 +144,13 @@ onMounted(async () => {
     color: var(--bs-primary);
     background-color: #f8f9fa;
     box-shadow: inset 0 -1px 0 rgba(0,0,0,.125);
+}
+.sub-header-row {
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+.print-sub-btn {
+    white-space: nowrap;
+    font-size: 0.8rem;
 }
 </style>
